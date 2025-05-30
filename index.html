@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>2248 Style Game with Improved Gravity Animation</title>
+    <style>
+        body {
+            background-color: #2c2c2c;
+            color: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: start;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        #preview-display {
+            min-height: 30px; 
+            line-height: 30px;
+            visibility: hidden; /* Hidden when no preview */
+            transition: opacity 0.3s;
+        }
+
+        .score-display {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        #game-board {
+            position: relative;
+            background-color: #444;
+            border-radius: 8px;
+            user-select: none;
+            width: calc(5 * 80px + 4 * 4px);
+            height: calc(8 * 80px + 7 * 4px);
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .game-cell {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 4px;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+            /* Initially no transition, we will add it dynamically */
+        }
+
+        .game-cell.highlight {
+            border: 2px solid #ffffff;
+        }
+
+        .game-cell.merging {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .merged-highlight {
+            animation: pulse 0.5s;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div id="preview-display"></div>
+    <div class="score-display">Score: <span id="score-value">0</span></div>
+    <div id="game-board"></div>
+    <script>
+        const TILE_SIZE = 80;
+        const TILE_GAP = 4;
+        const rows = 8;
+        const cols = 5;
+        let score = 0;
+        let board = Array.from({ length: rows }, () => Array(cols).fill(null));
+        let isDragging = false;
+        let dragChain = [];
+        let startCell = null;
+        let selectedCells = new Set();
+
+        let previewCumulativeValueState = null;
+        let previewBaseValue = null;
+        let previewIdenticalChainLengthState = 1;
+        let previewInitialIdenticalMet = false;
+
+        const chainThresholds = [2, 3, 5, 9, 17];
+
+        const gameBoard = document.getElementById('game-board');
+        const scoreDisplay = document.getElementById('score-value');
+        const previewDisplay = document.getElementById('preview-display');
+
+        let cellElements = new Map(); // key: "r,c", value: DOM element
+
+        function init() {
+            board = Array.from({ length: rows }, () =>
+                Array.from({ length: cols }, () => getRandomTileValue())
+            );
+            renderBoard();
+        }
+
+        function getRandomTileValue() {
+            const values = [2, 4, 8, 16, 32];
+            return values[Math.floor(Math.random() * values.length)];
+        }
+
+        function getTileColor(value) {
+            if (!value) return '#ccc0b3';
+            const hue = (Math.log2(value) * 40) % 360;
+            const lightness = 50 - Math.min(Math.log2(value), 10);
+            return `hsl(${hue}, 70%, ${lightness}%)`;
+        }
+
+        function positionForCell(r, c) {
+            const top = r * (TILE_SIZE + TILE_GAP);
+            const left = c * (TILE_SIZE + TILE_GAP);
+            return {top, left};
+        }
+
+        function renderBoard() {
+            scoreDisplay.textContent = score;
+
+            // Phase 1: Place all tiles at their final positions instantly (no transition)
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    const value = board[r][c];
+                    const key = `${r},${c}`;
+                    let cellEl = cellElements.get(key);
+
+                    if (value === null) {
+                        if (cellEl) {
+                            cellEl.remove();
+                            cellElements.delete(key);
+                        }
+                        continue;
+                    }
+
+                    if (!cellEl) {
+                        cellEl = document.createElement('div');
+                        cellEl.classList.add('game-cell');
+                        cellEl.dataset.row = r;
+                        cellEl.dataset.col = c;
+                        gameBoard.appendChild(cellEl);
+                        cellElements.set(key, cellEl);
+                    }
+
+                    cellEl.textContent = value;
+                    cellEl.style.backgroundColor = getTileColor(value);
+                    const pos = positionForCell(r, c);
+
+                    // No transition yet
+                    cellEl.style.transition = 'none';
+                    // Place them directly at final position
+                    cellEl.style.top = pos.top + 'px';
+                    cellEl.style.left = pos.left + 'px';
+
+                    cellEl.classList.remove('highlight','merged-highlight','merging');
+                }
+            }
+
+            // Force reflow to apply these positions
+            gameBoard.offsetHeight; // reflow
+
+            // Phase 2: Now apply transitions and move them UP by 50px
+            cellElements.forEach((cellEl, key) => {
+                cellEl.style.transition = 'top 0.5s ease, left 0.5s ease, transform 0.5s ease, opacity 0.3s ease';
+                const {row, col} = getCellPosition(cellEl);
+                if (row !== null && col !== null) {
+                    const pos = positionForCell(row, col);
+                    cellEl.style.top = (pos.top - 50) + 'px';
+                }
+            });
+
+            // Phase 3: Next frame, move them down to their final position to create the sliding effect
+            requestAnimationFrame(() => {
+                cellElements.forEach((cellEl, key) => {
+                    const {row, col} = getCellPosition(cellEl);
+                    if (row !== null && col !== null) {
+                        const pos = positionForCell(row, col);
+                        cellEl.style.top = pos.top + 'px';
+                    }
+                });
+            });
+        }
+
+        function isThreshold(length) {
+            return chainThresholds.includes(length);
+        }
+
+        function animateChainMerge(chain, finalValue) {
+            const finalCell = chain[chain.length - 1];
+            const finalKey = `${finalCell.row},${finalCell.col}`;
+
+            // Fade out intermediate tiles
+            for (let i = 0; i < chain.length - 1; i++) {
+                const {row, col} = chain[i];
+                const key = `${row},${col}`;
+                const el = cellElements.get(key);
+                if (el) {
+                    el.classList.add('merging');
+                }
+            }
+
+            setTimeout(() => {
+                // Remove intermediate tiles
+                for (let i = 0; i < chain.length - 1; i++) {
+                    const {row, col} = chain[i];
+                    const key = `${row},${col}`;
+                    const el = cellElements.get(key);
+                    if (el) {
+                        el.remove();
+                        cellElements.delete(key);
+                    }
+                    board[row][col] = null;
+                }
+
+                // Update final tile
+                board[finalCell.row][finalCell.col] = finalValue;
+
+                applyGravity();
+                refillBoard();
+                renderBoard(); // This will cause the sliding animation again
+
+                // Highlight final cell
+                const finalEl = cellElements.get(finalKey);
+                if (finalEl) {
+                    finalEl.classList.add('merged-highlight');
+                }
+            }, 300);
+        }
+
+        function applyGravity() {
+            for (let c = 0; c < cols; c++) {
+                let stack = [];
+                for (let r = rows - 1; r >= 0; r--) {
+                    if (board[r][c] !== null) {
+                        stack.push(board[r][c]);
+                    }
+                }
+                for (let r = rows - 1; r >= 0; r--) {
+                    board[r][c] = stack.length > 0 ? stack.shift() : null;
+                }
+            }
+        }
+
+        function refillBoard() {
+            for (let c = 0; c < cols; c++) {
+                for (let r = 0; r < rows; r++) {
+                    if (board[r][c] === null) {
+                        board[r][c] = getRandomTileValue();
+                    }
+                }
+            }
+        }
+
+        function processChain(chain) {
+            if (chain.length < 2) return;
+
+            let { row: startRow, col: startCol } = chain[0];
+            let firstValue = board[startRow][startCol];
+
+            let cumulativeValue = firstValue;
+            let baseValue = firstValue;
+            let identicalChainLength = 1;
+            let initialIdenticalMet = false;
+            let chainValid = true;
+
+            for (let i = 1; i < chain.length; i++) {
+                const { row, col } = chain[i];
+                const currentValue = board[row][col];
+
+                let result = applyChainRules(cumulativeValue, baseValue, identicalChainLength, initialIdenticalMet, currentValue);
+                if (result.valid) {
+                    ({ 
+                        cumulativeValue, 
+                        baseValue,
+                        identicalChainLength, 
+                        initialIdenticalMet
+                    } = result);
+
+                    score += currentValue;
+                } else {
+                    chainValid = false;
+                    break;
+                }
+            }
+
+            if (chainValid) {
+                animateChainMerge(chain, cumulativeValue);
+            } else {
+                console.log("[processChain] Chain invalid, no final merge.");
+            }
+        }
+
+        function applyChainRules(cV, bV, iCL, iIM, newValue) {
+            // Identical check
+            if (newValue === bV) {
+                iCL++;
+                if (isThreshold(iCL)) {
+                    cV *= 2;
+                }
+                if (iCL >= 2) {
+                    iIM = true;
+                }
+                return {valid: true, cumulativeValue: cV, baseValue: bV, identicalChainLength: iCL, initialIdenticalMet: iIM};
+            }
+
+            // Progressive step
+            if (iIM && newValue === bV * 2) {
+                cV *= 2;
+                bV = bV * 2;
+                iCL = 1;
+                return {valid: true, cumulativeValue: cV, baseValue: bV, identicalChainLength: iCL, initialIdenticalMet: iIM};
+            }
+
+            return {valid: false};
+        }
+
+        function resetDrag() {
+            isDragging = false;
+            startCell = null;
+            dragChain.forEach(cell => {
+                const key = `${cell.row},${cell.col}`;
+                const el = cellElements.get(key);
+                if (el) {
+                    el.classList.remove('highlight');
+                }
+            });
+            dragChain = [];
+            selectedCells.clear();
+        }
+
+        function resetPreview() {
+            previewCumulativeValueState = null;
+            previewBaseValue = null;
+            previewIdenticalChainLengthState = 1;
+            previewInitialIdenticalMet = false;
+            previewDisplay.textContent = '';
+            previewDisplay.style.visibility = 'hidden';
+        }
+
+        function updatePreview() {
+            if (previewCumulativeValueState !== null) {
+                previewDisplay.textContent = `Preview: ${previewCumulativeValueState}`;
+                previewDisplay.style.visibility = 'visible';
+            } else {
+                previewDisplay.textContent = '';
+                previewDisplay.style.visibility = 'hidden';
+            }
+        }
+
+        function isValidMove(currentCell) {
+            if (!startCell || !currentCell) return false;
+            if (dragChain.length === 0) return false;
+
+            const lastCell = dragChain[dragChain.length - 1];
+            if (!lastCell) return false;
+
+            const { row: lastRow, col: lastCol } = lastCell;
+            const { row: currentRow, col: currentCol } = currentCell;
+
+            const cellKey = `${currentRow},${currentCol}`;
+            if (selectedCells.has(cellKey)) return false;
+
+            const isAdjacent =
+                Math.abs(currentRow - lastRow) <= 1 &&
+                Math.abs(currentCol - lastCol) <= 1 &&
+                (currentRow !== lastRow || currentCol !== lastCol);
+
+            const currentTileValue = board[currentRow][currentCol];
+
+            const result = simulateAddTile(
+                previewCumulativeValueState,
+                previewBaseValue,
+                previewIdenticalChainLengthState,
+                previewInitialIdenticalMet,
+                currentTileValue
+            );
+
+            return isAdjacent && result.valid;
+        }
+
+        function simulateAddTile(cV, bV, iCL, iIM, newValue) {
+            if (cV === null) {
+                cV = newValue;
+                bV = newValue;
+                iCL = 1;
+                iIM = false;
+                return {valid:true, cV, bV, iCL, iIM};
+            }
+
+            if (newValue === bV) {
+                iCL++;
+                if (isThreshold(iCL)) {
+                    cV *= 2;
+                }
+                if (iCL >= 2) iIM = true;
+                return {valid:true, cV, bV, iCL, iIM};
+            }
+
+            if (iIM && newValue === bV * 2) {
+                cV *= 2;
+                bV = bV * 2;
+                iCL = 1;
+                return {valid:true, cV, bV, iCL, iIM};
+            }
+
+            return {valid:false};
+        }
+
+        function handleStart(e) {
+            const target = e.target;
+            const cell = target.closest('.game-cell');
+            if (!cell) return;
+
+            const position = getCellPosition(cell);
+            if (!position) return;
+
+            isDragging = true;
+            startCell = position;
+            const startValue = board[position.row][position.col];
+            previewCumulativeValueState = startValue;
+            previewBaseValue = startValue;
+            previewIdenticalChainLengthState = 1;
+            previewInitialIdenticalMet = false;
+
+            dragChain = [position];
+            const key = `${position.row},${position.col}`;
+            selectedCells = new Set();
+            selectedCells.add(key);
+
+            const startEl = cellElements.get(key);
+            if (startEl) startEl.classList.add('highlight');
+
+            updatePreview();
+        }
+
+        function handleMove(e) {
+            if (!isDragging) return;
+            if (dragChain.length === 0) return;
+
+            const target = e.target;
+            const cell = target.closest('.game-cell');
+            if (!cell) return;
+
+            const currentCell = getCellPosition(cell);
+            if (!currentCell) return;
+
+            const cellKey = `${currentCell.row},${currentCell.col}`;
+            if (selectedCells.has(cellKey)) return;
+
+            if (isValidMove(currentCell)) {
+                const lastCell = dragChain[dragChain.length - 1];
+                if (lastCell && (lastCell.row !== currentCell.row || lastCell.col !== currentCell.col)) {
+                    dragChain.push(currentCell);
+                    selectedCells.add(cellKey);
+
+                    const currentValue = board[currentCell.row][currentCell.col];
+                    const simResult = simulateAddTile(
+                        previewCumulativeValueState,
+                        previewBaseValue,
+                        previewIdenticalChainLengthState,
+                        previewInitialIdenticalMet,
+                        currentValue
+                    );
+
+                    if (simResult.valid) {
+                        previewCumulativeValueState = simResult.cV;
+                        previewBaseValue = simResult.bV;
+                        previewIdenticalChainLengthState = simResult.iCL;
+                        previewInitialIdenticalMet = simResult.iIM;
+                    }
+
+                    const el = cellElements.get(cellKey);
+                    if (el) el.classList.add('highlight');
+
+                    updatePreview();
+                }
+            }
+        }
+
+        function handleEnd() {
+            if (isDragging && dragChain.length > 1) {
+                processChain(dragChain);
+            }
+            resetDrag();
+            resetPreview();
+        }
+
+        function getCellPosition(element) {
+            if (!element || !element.dataset) return null;
+            const row = parseInt(element.dataset.row, 10);
+            const col = parseInt(element.dataset.col, 10);
+            if (isNaN(row) || isNaN(col)) return null;
+            return { row, col };
+        }
+
+        gameBoard.addEventListener("mousedown", handleStart);
+        gameBoard.addEventListener("mousemove", handleMove);
+        gameBoard.addEventListener("mouseup", handleEnd);
+
+        gameBoard.addEventListener("touchstart", e => {
+            if (e.touches.length > 0) {
+                handleStart(e.touches[0]);
+                e.preventDefault();
+            }
+        });
+
+        gameBoard.addEventListener("touchmove", e => {
+            if (e.touches.length > 0) {
+                handleMove(e.touches[0]);
+                e.preventDefault();
+            }
+        });
+
+        gameBoard.addEventListener("touchend", e => {
+            handleEnd();
+            e.preventDefault();
+        });
+
+        init();
+    </script>
+</body>
+</html>
