@@ -573,7 +573,16 @@
 
         gameBoard.addEventListener("touchmove", e => {
             if (e.touches.length > 0) {
-                handleMove(e.touches[0]);
+                const touch = e.touches[0];
+                // Get element at touch coordinates instead of relying on e.target
+                const elementAtPoint = document.elementFromPoint(touch.clientX, touch.clientY);
+                
+                // Create a synthetic event with the correct target
+                const syntheticEvent = {
+                    target: elementAtPoint
+                };
+                
+                handleMove(syntheticEvent);
                 e.preventDefault();
             }
         });
