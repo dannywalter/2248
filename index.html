@@ -45,6 +45,12 @@
             margin-bottom: 10px;
         }
 
+        .moves-display {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
         #game-board {
             position: relative;
             background-color: #444;
@@ -91,13 +97,19 @@
 <body>
     <div class="game-container">
         <div id="preview-display"></div>
-        <div class="score-display">Score: <span id="score-value">0</span></div>
+<div class="score-display">Score: <span id="score-value">0</span></div>
+<div class="moves-display">Moves: <span id="moves-value">25</span></div>
         <div id="game-board"></div>
     </div>
     <script>
         const rows = 8;
         const cols = 5;
         let score = 0;
+
+let movesLeft = 25; // Number of moves before game over
+let gameActive = true;
+let highestValue = 0; // Track highest doodle rarity achieved
+
         let board = Array.from({ length: rows }, () => Array(cols).fill(null));
         let isDragging = false;
         let dragChain = [];
@@ -351,10 +363,13 @@
             }
 
             if (chainValid) {
-                animateChainMerge(chain, cumulativeValue);
-            } else {
-                console.log("[processChain] Chain invalid, no final merge.");
-            }
+        animateChainMerge(chain, cumulativeValue);
+        
+        // Update highest value achieved
+        if (cumulativeValue > highestValue) {
+            highestValue = cumulativeValue;
+        }
+    }
         }
 
         function applyChainRules(cV, bV, iCL, iIM, newValue) {
@@ -544,13 +559,26 @@
             }
         }
 
-        function handleEnd() {
-            if (isDragging && dragChain.length > 1) {
-                processChain(dragChain);
-            }
-            resetDrag();
-            resetPreview();
+function handleEnd() {
+    if (!gameActive) return;
+    
+    if (isDragging && dragChain.length > 1) {
+        processChain(dragChain);
+        
+        // Decrement moves and check for game over
+        movesLeft--;
+        document.getElementById('moves-value').textContent = movesLeft;
+        
+        if (movesLeft <= 0) {
+            gameActive = false;
+            // No custom screen - will be replaced by Farcade SDK
+            console.log("GAME OVER - Highest value: " + highestValue);
+            // This is where Farcade game over would be triggered
         }
+    }
+    resetDrag();
+    resetPreview();
+}
 
         function getCellPosition(element) {
             if (!element || !element.dataset) return null;
@@ -593,6 +621,23 @@
         });
 
         init();
+
+        function restartGame() {
+    movesLeft = 25;
+    gameActive = true;
+    highestValue = 0;
+    score = 0;
+    document.getElementById('score-value').textContent = score;
+    document.getElementById('moves-value').textContent = movesLeft;
+    init();
+}
+
+// Add a key event listener to restart with 'R' key
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'r' || event.key === 'R') {
+        restartGame();
+    }
+});
     </script>
 </body>
 </html>
