@@ -64,6 +64,8 @@
 
         .game-cell {
     position: absolute;
+    background-size: cover;
+    background-position: center;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -73,6 +75,16 @@
     color: #333;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.game-cell img {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+    -webkit-user-drag: none;
+    user-select: none;
+    pointer-events: none; /* This is key to make events pass through to parent */
+    draggable: false;
 }
 
         .game-cell.highlight {
@@ -215,49 +227,68 @@ let highestValue = 0; // Track highest doodle rarity achieved
         }
 
         function renderBoard() {
-            scoreDisplay.textContent = score;
+    scoreDisplay.textContent = score;
 
-            // Phase 1: Place all tiles at their final positions instantly (no transition)
-            for (let r = 0; r < rows; r++) {
-                for (let c = 0; c < cols; c++) {
-                    const value = board[r][c];
-                    const key = `${r},${c}`;
-                    let cellEl = cellElements.get(key);
+    // Phase 1: Place all tiles at their final positions instantly (no transition)
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+            const value = board[r][c];
+            const key = `${r},${c}`;
+            let cellEl = cellElements.get(key);
 
-                    if (value === null) {
-                        if (cellEl) {
-                            cellEl.remove();
-                            cellElements.delete(key);
-                        }
-                        continue;
-                    }
-
-                    if (!cellEl) {
-                        cellEl = document.createElement('div');
-                        cellEl.classList.add('game-cell');
-                        cellEl.dataset.row = r;
-                        cellEl.dataset.col = c;
-                        gameBoard.appendChild(cellEl);
-                        cellElements.set(key, cellEl);
-                    }
-
-                    cellEl.textContent = value;
-                    cellEl.style.backgroundColor = getTileColor(value);
-                    cellEl.style.width = TILE_SIZE + 'px';
-                    cellEl.style.height = TILE_SIZE + 'px';
-                    cellEl.style.fontSize = `var(--tile-font-size)`;
-                    
-                    const pos = positionForCell(r, c);
-
-                    // No transition yet
-                    cellEl.style.transition = 'none';
-                    // Place them directly at final position
-                    cellEl.style.top = pos.top + 'px';
-                    cellEl.style.left = pos.left + 'px';
-
-                    cellEl.classList.remove('highlight','merged-highlight','merging');
+            if (value === null) {
+                if (cellEl) {
+                    cellEl.remove();
+                    cellElements.delete(key);
                 }
+                continue;
             }
+
+            if (!cellEl) {
+                cellEl = document.createElement('div');
+                cellEl.classList.add('game-cell');
+                cellEl.dataset.row = r;
+                cellEl.dataset.col = c;
+                gameBoard.appendChild(cellEl);
+                cellElements.set(key, cellEl);
+            }
+
+            // Special handling for value 2 tiles - use doodle image
+            if (value === 2) {
+                cellEl.textContent = '';
+                const img = document.createElement('img');
+                img.src = 'https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/doopie%2001-rrQis0SMYhgPEDDTdfd49PrpG9ydQm.png';  // Replace with your actual doodle image URL
+                img.alt = '2';
+                img.draggable = false;
+                
+                // Remove any previous image and add the new one
+                while (cellEl.firstChild) {
+                    cellEl.removeChild(cellEl.firstChild);
+                }
+                cellEl.appendChild(img);
+            } else {
+                // For other tiles, just display the number
+                cellEl.textContent = value;
+                // Remove any images that might be present
+                Array.from(cellEl.getElementsByTagName('img')).forEach(img => img.remove());
+            }
+            
+            cellEl.style.backgroundColor = getTileColor(value);
+            cellEl.style.width = TILE_SIZE + 'px';
+            cellEl.style.height = TILE_SIZE + 'px';
+            cellEl.style.fontSize = `var(--tile-font-size)`;
+            
+            const pos = positionForCell(r, c);
+
+            // No transition yet
+            cellEl.style.transition = 'none';
+            // Place them directly at final position
+            cellEl.style.top = pos.top + 'px';
+            cellEl.style.left = pos.left + 'px';
+
+            cellEl.classList.remove('highlight','merged-highlight','merging');
+        }
+    }
 
             // Force reflow to apply these positions
             gameBoard.offsetHeight; // reflow
@@ -514,15 +545,23 @@ let highestValue = 0; // Track highest doodle rarity achieved
         }
 
         function handleStart(e) {
-            const target = e.target;
-            const cell = target.closest('.game-cell');
-            if (!cell) return;
+            // Get the target element
+    let target = e.target;
+    
+    // If target is an image, get its parent cell
+    if (target.tagName === 'IMG') {
+        target = target.parentElement;
+    }
+    
+    const cell = target.closest('.game-cell');
+    if (!cell) return;
 
-            const position = getCellPosition(cell);
-            if (!position) return;
-
-            isDragging = true;
-            startCell = position;
+    // Rest of function remains the same
+    const position = getCellPosition(cell);
+    if (!position) return;
+    
+    isDragging = true;
+    startCell = position;
             const startValue = board[position.row][position.col];
             previewCumulativeValueState = startValue;
             previewBaseValue = startValue;
