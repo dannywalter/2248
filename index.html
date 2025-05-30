@@ -2,9 +2,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <title>2248 Style Game with Improved Gravity Animation</title>
     <style>
+        html, body {
+    position: fixed;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    overscroll-behavior: none; /* Prevent pull to refresh */
+    touch-action: none; /* Disable browser handling of all touch gestures */
+}
+
         body {
     background-color: #191919;
     color: #f9f9f9;
@@ -15,6 +24,12 @@
     height: 100vh;
     margin: 0;
     font-family: Arial, sans-serif;
+    -webkit-touch-callout: none; /* Prevent callout on long-press */
+    -webkit-user-select: none;   /* Safari */
+    -khtml-user-select: none;    /* Konqueror */
+    -moz-user-select: none;      /* Firefox */
+    -ms-user-select: none;       /* IE/Edge */
+    user-select: none;           /* Standard */
 }
 
         /* New container to limit game size */
@@ -60,6 +75,7 @@
     flex-grow: 1;
     margin: 0;
     overflow: hidden;
+    touch-action: manipulation;
 }
 
         .game-cell {
@@ -713,11 +729,11 @@ function handleEnd() {
         gameBoard.addEventListener("mouseup", handleEnd);
 
         gameBoard.addEventListener("touchstart", e => {
-            if (e.touches.length > 0) {
-                handleStart(e.touches[0]);
-                e.preventDefault();
-            }
-        });
+    if (e.touches.length > 0) {
+        handleStart(e.touches[0]);
+        e.preventDefault();
+    }
+}, { passive: false });
 
         gameBoard.addEventListener("touchmove", e => {
             if (e.touches.length > 0) {
@@ -739,6 +755,12 @@ function handleEnd() {
             handleEnd();
             e.preventDefault();
         });
+
+        document.addEventListener('contextmenu', function(e) {
+    if (e.target.closest('#game-board')) {
+        e.preventDefault();
+    }
+});
 
         init();
 
