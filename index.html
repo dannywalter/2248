@@ -516,48 +516,104 @@ let highestValue = 0; // Track highest doodle rarity achieved
         }
 
         function handleMove(e) {
-            if (!isDragging) return;
-            if (dragChain.length === 0) return;
+    if (!isDragging) return;
+    if (dragChain.length === 0) return;
 
-            const target = e.target;
-            const cell = target.closest('.game-cell');
-            if (!cell) return;
+    const target = e.target;
+    const cell = target.closest('.game-cell');
+    if (!cell) return;
 
-            const currentCell = getCellPosition(cell);
-            if (!currentCell) return;
+    const currentCell = getCellPosition(cell);
+    if (!currentCell) return;
 
-            const cellKey = `${currentCell.row},${currentCell.col}`;
-            if (selectedCells.has(cellKey)) return;
-
-            if (isValidMove(currentCell)) {
-                const lastCell = dragChain[dragChain.length - 1];
-                if (lastCell && (lastCell.row !== currentCell.row || lastCell.col !== currentCell.col)) {
-                    dragChain.push(currentCell);
-                    selectedCells.add(cellKey);
-
-                    const currentValue = board[currentCell.row][currentCell.col];
-                    const simResult = simulateAddTile(
-                        previewCumulativeValueState,
-                        previewBaseValue,
-                        previewIdenticalChainLengthState,
-                        previewInitialIdenticalMet,
-                        currentValue
-                    );
-
-                    if (simResult.valid) {
-                        previewCumulativeValueState = simResult.cV;
-                        previewBaseValue = simResult.bV;
-                        previewIdenticalChainLengthState = simResult.iCL;
-                        previewInitialIdenticalMet = simResult.iIM;
-                    }
-
-                    const el = cellElements.get(cellKey);
-                    if (el) el.classList.add('highlight');
-
-                    updatePreview();
-                }
-            }
+    const cellKey = `${currentCell.row},${currentCell.col}`;
+    
+    // Check if we're going back to the second-last cell (backtracking)
+    if (dragChain.length > 1) {
+        const secondLastCell = dragChain[dragChain.length - 2];
+        if (secondLastCell.row === currentCell.row && secondLastCell.col === currentCell.col) {
+            // Get the last cell to remove its highlighting
+            const lastCell = dragChain[dragChain.length - 1];
+            const lastCellKey = `${lastCell.row},${lastCell.col}`;
+            
+            // Remove last cell from chain
+            dragChain.pop();
+            selectedCells.delete(lastCellKey);
+            
+            // Remove highlight from the removed cell
+            const lastEl = cellElements.get(lastCellKey);
+            if (lastEl) lastEl.classList.remove('highlight');
+            
+            // Recalculate preview values based on the new chain
+            recalculatePreviewValues();
+            updatePreview();
+            
+            return;
         }
+    }
+
+    // If not backtracking, handle as before (adding new cells)
+    if (selectedCells.has(cellKey)) return;
+
+    if (isValidMove(currentCell)) {
+        const lastCell = dragChain[dragChain.length - 1];
+        if (lastCell && (lastCell.row !== currentCell.row || lastCell.col !== currentCell.col)) {
+            dragChain.push(currentCell);
+            selectedCells.add(cellKey);
+
+            const currentValue = board[currentCell.row][currentCell.col];
+            const simResult = simulateAddTile(
+                previewCumulativeValueState,
+                previewBaseValue,
+                previewIdenticalChainLengthState,
+                previewInitialIdenticalMet,
+                currentValue
+            );
+
+            if (simResult.valid) {
+                previewCumulativeValueState = simResult.cV;
+                previewBaseValue = simResult.bV;
+                previewIdenticalChainLengthState = simResult.iCL;
+                previewInitialIdenticalMet = simResult.iIM;
+            }
+
+            const el = cellElements.get(cellKey);
+            if (el) el.classList.add('highlight');
+
+            updatePreview();
+        }
+    }
+}
+
+// Add this new function to recalculate preview values when backtracking
+function recalculatePreviewValues() {
+    // Reset preview values
+    previewCumulativeValueState = null;
+    previewBaseValue = null;
+    previewIdenticalChainLengthState = 1;
+    previewInitialIdenticalMet = false;
+
+    // Rebuild preview values from the current chain
+    for (let i = 0; i < dragChain.length; i++) {
+        const {row, col} = dragChain[i];
+        const tileValue = board[row][col];
+        
+        const result = simulateAddTile(
+            previewCumulativeValueState,
+            previewBaseValue,
+            previewIdenticalChainLengthState,
+            previewInitialIdenticalMet,
+            tileValue
+        );
+        
+        if (result.valid) {
+            previewCumulativeValueState = result.cV;
+            previewBaseValue = result.bV;
+            previewIdenticalChainLengthState = result.iCL;
+            previewInitialIdenticalMet = result.iIM;
+        }
+    }
+}
 
 function handleEnd() {
     if (!gameActive) return;
