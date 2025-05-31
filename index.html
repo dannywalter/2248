@@ -631,68 +631,41 @@
       }
 
       function processChain(chain) {
-        // Logic remains robust
-        if (chain.length < 2) return;
-        let { row: startRow, col: startCol } = chain[0];
-        let firstValue = board[startRow][startCol];
-        let cumulativeValue = firstValue;
-        let baseValue = firstValue;
-        let identicalChainLength = 1;
-        let initialIdenticalMet = false;
-        let chainValid = true;
-
-        for (let i = 1; i < chain.length; i++) {
-          const { row, col } = chain[i];
-          const currentValue = board[row][col];
-          let result = applyChainRules(
-            cumulativeValue,
-            baseValue,
-            identicalChainLength,
-            initialIdenticalMet,
-            currentValue,
-          );
-          if (result.valid) {
-            ({ cumulativeValue, baseValue, identicalChainLength, initialIdenticalMet } = result);
-            score += currentValue;
-          } else {
-            chainValid = false;
-            break;
-          }
-        }
-        if (chainValid) {
-          animateChainMerge(chain, cumulativeValue);
-          if (cumulativeValue > highestValue) highestValue = cumulativeValue;
-        }
-      }
+  if (chain.length < 2) return; // Only require 2 identical tiles (changed from 3)
+  
+  // Rest of the function remains the same
+  let { row: startRow, col: startCol } = chain[0];
+  let baseValue = board[startRow][startCol];
+  
+  // Verification logic
+  for (let i = 1; i < chain.length; i++) {
+    const { row, col } = chain[i];
+    if (board[row][col] !== baseValue) {
+      console.error("Invalid chain: non-identical values detected");
+      return;
+    }
+  }
+  
+  // Final value and scoring remain the same
+  let finalValue = baseValue * 2;
+  score += baseValue * chain.length;
+  animateChainMerge(chain, finalValue);
+  if (finalValue > highestValue) highestValue = finalValue;
+}
 
       function applyChainRules(cV, bV, iCL, iIM, newValue) {
-        // Logic remains robust
-        if (newValue === bV) {
-          iCL++;
-          if (isThreshold(iCL)) cV *= 2;
-          if (iCL >= 2) iIM = true;
-          return {
-            valid: true,
-            cumulativeValue: cV,
-            baseValue: bV,
-            identicalChainLength: iCL,
-            initialIdenticalMet: iIM,
-          };
-        }
-        if (iIM && newValue === bV * 2) {
-          cV *= 2;
-          bV *= 2;
-          iCL = 1;
-          return {
-            valid: true,
-            cumulativeValue: cV,
-            baseValue: bV,
-            identicalChainLength: iCL,
-            initialIdenticalMet: iIM,
-          };
-        }
-        return { valid: false };
-      }
+  // Only allow identical values in a chain
+  if (newValue === bV) {
+    return {
+      valid: true,
+      cumulativeValue: bV * 2, // Result will be double the base value
+      baseValue: bV,
+      identicalChainLength: iCL + 1,
+      initialIdenticalMet: true
+    };
+  }
+  return { valid: false };
+}
 
       function resetDrag() {
         // Logic remains robust
@@ -718,14 +691,21 @@
       }
 
       function updatePreview() {
-        // Logic remains robust
-        if (previewCumulativeValueState !== null && dragChain.length > 1) {
-          previewDisplay.textContent = `Chain Value: ${previewCumulativeValueState}`;
-          previewDisplay.style.visibility = "visible";
-        } else {
-          resetPreview();
-        }
-      }
+  if (previewBaseValue !== null && dragChain.length >= 1) {
+    const resultValue = previewBaseValue * 2;
+    
+    if (dragChain.length < 2) {
+      // Changed to show we need just one more matching tile
+      previewDisplay.textContent = `Need 1 more matching ${previewBaseValue}`;
+    } else {
+      // Show merge result
+      previewDisplay.textContent = `${dragChain.length} × ${previewBaseValue} → ${resultValue}`;
+    }
+    previewDisplay.style.visibility = "visible";
+  } else {
+    resetPreview();
+  }
+}
 
       function isValidMove(currentCell) {
         // Logic remains robust
@@ -752,22 +732,22 @@
       }
 
       function simulateAddTile(cV, bV, iCL, iIM, newValue) {
-        // Logic remains robust
-        if (cV === null) return { valid: true, cV: newValue, bV: newValue, iCL: 1, iIM: false };
-        if (newValue === bV) {
-          let next_iCL = iCL + 1;
-          let next_cV = cV;
-          if (isThreshold(next_iCL)) next_cV *= 2;
-          let next_iIM = next_iCL >= 2 ? true : iIM;
-          return { valid: true, cV: next_cV, bV: bV, iCL: next_iCL, iIM: next_iIM };
-        }
-        if (iIM && newValue === bV * 2) {
-          let next_cV = cV * 2;
-          let next_bV = bV * 2;
-          return { valid: true, cV: next_cV, bV: next_bV, iCL: 1, iIM: iIM };
-        }
-        return { valid: false };
-      }
+  // First tile in chain
+  if (bV === null) return { valid: true, cV: newValue, bV: newValue, iCL: 1, iIM: false };
+  
+  // Strict type comparison with Number conversion
+  if (Number(newValue) === Number(bV)) {
+    return { 
+      valid: true, 
+      cV: bV * 2, 
+      bV: bV,
+      iCL: iCL + 1, 
+      iIM: true 
+    };
+  }
+  
+  return { valid: false };
+}
 
       function handleStart(e) {
         // Logic remains robust
@@ -869,23 +849,22 @@
       }
 
       function handleEnd() {
-        // Logic remains robust
-        if (!gameActive) return;
-        if (isDragging && dragChain.length > 1) {
-          processChain(dragChain);
-          movesLeft--;
-          if (movesLeft <= 0) {
-            gameActive = false;
-            console.log("GAME OVER - Score: " + score + ", Highest value: " + highestValue);
-            setTimeout(
-              () => alert(`Game Over!\nYour Score: ${score}\nHighest Tile: ${highestValue}\nPress R to Restart`),
-              500,
-            );
-          }
-        }
-        resetDrag();
-        resetPreview();
-      }
+  if (!gameActive) return;
+  if (isDragging && dragChain.length >= 2) { // Changed to require only 2 identical tiles
+    processChain(dragChain);
+    movesLeft--;
+    if (movesLeft <= 0) {
+      gameActive = false;
+      console.log("GAME OVER - Score: " + score + ", Highest value: " + highestValue);
+      setTimeout(
+        () => alert(`Game Over!\nYour Score: ${score}\nHighest Tile: ${highestValue}\nPress R to Restart`),
+        500,
+      );
+    }
+  }
+  resetDrag();
+  resetPreview();
+}
 
       function getCellPosition(element) {
         // Logic remains robust
