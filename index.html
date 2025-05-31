@@ -53,6 +53,18 @@
         visibility: hidden; /* Hidden when no preview */
         transition: opacity 0.3s;
         margin-bottom: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+      }
+
+      .preview-img {
+        height: 24px;
+        width: 24px;
+        object-fit: contain;
+        vertical-align: middle;
+        border-radius: 3px;
       }
 
       .score-display {
@@ -69,13 +81,10 @@
 
       #game-board {
         position: relative;
-        background-color: #2c2c2c;
-        border-radius: 8px;
         user-select: none;
         width: 100%;
         flex-grow: 1;
         margin: 0;
-        overflow: hidden;
         touch-action: manipulation;
       }
 
@@ -139,7 +148,7 @@
       <div id="game-board"></div>
     </div>
     <script>
-      const rows = 8;
+      const rows = 7;
       const cols = 5;
       let score = 0;
 
@@ -332,10 +341,21 @@
       }
 
       function positionForCell(r, c) {
-        const top = r * (TILE_SIZE + TILE_GAP);
-        const left = c * (TILE_SIZE + TILE_GAP);
-        return { top, left };
-      }
+  // Calculate the total width and height of the grid
+  const gridWidth = cols * TILE_SIZE + (cols - 1) * TILE_GAP;
+  const gridHeight = rows * TILE_SIZE + (rows - 1) * TILE_GAP;
+  
+  // Calculate the offset to center the grid in the game board
+  const boardRect = gameBoard.getBoundingClientRect();
+  const offsetLeft = Math.max(0, (boardRect.width - gridWidth) / 2);
+  const offsetTop = Math.max(0, (boardRect.height - gridHeight) / 2);
+  
+  // Calculate position with offset
+  const top = offsetTop + r * (TILE_SIZE + TILE_GAP);
+  const left = offsetLeft + c * (TILE_SIZE + TILE_GAP);
+  
+  return { top, left };
+}
 
       function updateCellElementContent(cellEl, value) {
         const newValueStr = String(value);
@@ -715,14 +735,39 @@
   if (previewBaseValue !== null && dragChain.length >= 1) {
     const resultValue = previewBaseValue * 2;
     
-    if (dragChain.length < 2) {
-      // Changed to show we need just one more matching tile
-      previewDisplay.textContent = `Need 1 more matching ${previewBaseValue}`;
-    } else {
-      // Show merge result
-      previewDisplay.textContent = `${dragChain.length} × ${previewBaseValue} → ${resultValue}`;
-    }
+    // Clear previous content
+    previewDisplay.innerHTML = '';
     previewDisplay.style.visibility = "visible";
+    
+    if (dragChain.length < 2) {
+      // Need one more matching tile
+      const textSpan = document.createElement('span');
+      textSpan.textContent = "Need 1 more matching ";
+      previewDisplay.appendChild(textSpan);
+      
+      const baseImg = document.createElement('img');
+      baseImg.src = getPreloadedImageSrc(previewBaseValue);
+      baseImg.alt = previewBaseValue.toString();
+      baseImg.className = 'preview-img';
+      previewDisplay.appendChild(baseImg);
+    } else {
+      // Show merge result (without the count)
+      const baseImg = document.createElement('img');
+      baseImg.src = getPreloadedImageSrc(previewBaseValue);
+      baseImg.alt = previewBaseValue.toString();
+      baseImg.className = 'preview-img';
+      previewDisplay.appendChild(baseImg);
+      
+      const arrowSpan = document.createElement('span');
+      arrowSpan.textContent = " → ";
+      previewDisplay.appendChild(arrowSpan);
+      
+      const resultImg = document.createElement('img');
+      resultImg.src = getPreloadedImageSrc(resultValue);
+      resultImg.alt = resultValue.toString();
+      resultImg.className = 'preview-img';
+      previewDisplay.appendChild(resultImg);
+    }
   } else {
     resetPreview();
   }
