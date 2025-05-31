@@ -158,15 +158,18 @@
 
       // Add Farcade SDK event listeners
       if (window.FarcadeSDK) {
-        window.FarcadeSDK.on('play_again', () => {
-          restartGame();
-        });
+  window.FarcadeSDK.on('play_again', () => {
+    restartGame();
+  });
 
-        window.FarcadeSDK.on('toggle_mute', (data) => {
-          // Game doesn't currently have sound, but handling the event
-          console.log("Mute state changed:", data.isMuted);
-        });
-      }
+  window.FarcadeSDK.on('toggle_mute', (data) => {
+    console.log("Mute state changed:", data.isMuted);
+    // Update sound manager mute state
+    if (SoundManager.isInitialized) {
+      SoundManager.setMute(data.isMuted);
+    }
+  });
+}
 
       let board = Array.from({ length: rows }, () => Array(cols).fill(null));
       let isDragging = false;
@@ -222,6 +225,123 @@
   128: {
     src: "https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/doopie%2004-REUUG9cMXkIp3yOng0bK4oEUXZqN4E.png",
     img: null,
+  }
+};
+
+// Sound system
+const SoundManager = {
+  sounds: {
+    bubble: null,
+    merge: null
+  },
+  audioContext: null,
+  isMuted: false,
+  gainNode: null,
+  isInitialized: false,
+  
+  // Initialize audio on first user interaction
+  init() {
+    if (this.isInitialized) return;
+    
+    try {
+      this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      this.gainNode = this.audioContext.createGain();
+      this.gainNode.connect(this.audioContext.destination);
+      this.loadSounds();
+      this.isInitialized = true;
+      
+      // Apply mute state from Farcade if available
+      if (window.FarcadeSDK && window.FarcadeSDK._isMuted) {
+        this.setMute(true);
+      }
+    } catch (e) {
+      console.error("Web Audio API not supported:", e);
+    }
+  },
+  
+  // Load all sound assets
+  loadSounds() {
+    // Load bubble sound with your provided URL
+    this.loadSound("https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/water-drop-cut-Gh9JOaPkNa3hhf3IwHcWiDK3Tg5rsv.mp3")
+      .then(buffer => this.sounds.bubble = buffer)
+      .catch(e => console.warn("Failed to load bubble sound", e));
+      
+    // Load pop/merge sound with your provided URL
+    this.loadSound("https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/bubble-pop-cut-8nhjPeMO2tjo3gXeY5e1Hr54ySh1ep.mp3")
+      .then(buffer => this.sounds.merge = buffer)
+      .catch(e => console.warn("Failed to load merge sound", e));
+  },
+  
+  // Fetch and decode a single sound
+  async loadSound(url) {
+    try {
+      const response = await fetch(url);
+      const arrayBuffer = await response.arrayBuffer();
+      return await this.audioContext.decodeAudioData(arrayBuffer);
+    } catch (e) {
+      console.error(`Error loading sound: ${url}`, e);
+      return null;
+    }
+  },
+  
+  // Play bubble sound with pitch based on chain length
+  playBubbleSound(chainLength) {
+    if (!this.isInitialized || this.isMuted || !this.sounds.bubble) return;
+    
+    // Resume audio context if suspended
+    if (this.audioContext.state === 'suspended') {
+      this.audioContext.resume();
+    }
+    
+    const source = this.audioContext.createBufferSource();
+    source.buffer = this.sounds.bubble;
+    
+    // Increase pitch with chain length
+    const basePitch = 0.8;
+    const pitchIncrement = 0.1;
+    source.playbackRate.value = basePitch + (chainLength * pitchIncrement);
+    
+    // Set volume
+    const gainNode = this.audioContext.createGain();
+    gainNode.gain.value = 0.4; // Adjust volume as needed
+    
+    source.connect(gainNode);
+    gainNode.connect(this.gainNode);
+    source.start(0);
+  },
+  
+  // Play merge pop sound
+  playMergeSound(chainLength) {
+    if (!this.isInitialized || this.isMuted || !this.sounds.merge) return;
+    
+    // Resume audio context if suspended
+    if (this.audioContext.state === 'suspended') {
+      this.audioContext.resume();
+    }
+    
+    const source = this.audioContext.createBufferSource();
+    source.buffer = this.sounds.merge;
+    
+    // Adjust based on chain length
+    const volume = Math.min(0.3 + (chainLength * 0.05), 0.9);
+    const pitch = Math.min(1 + (chainLength * 0.05), 1.5);
+    
+    source.playbackRate.value = pitch;
+    
+    const gainNode = this.audioContext.createGain();
+    gainNode.gain.value = volume;
+    
+    source.connect(gainNode);
+    gainNode.connect(this.gainNode);
+    source.start(0);
+  },
+  
+  // Set mute state
+  setMute(isMuted) {
+    this.isMuted = isMuted;
+    if (this.gainNode) {
+      this.gainNode.gain.value = isMuted ? 0 : 1;
+    }
   }
 };
 
@@ -684,9 +804,8 @@
       }
 
       function processChain(chain) {
-  if (chain.length < 2) return; // Only require 2 identical tiles (changed from 3)
+  if (chain.length < 2) return; // Only require 2 identical tiles
   
-  // Rest of the function remains the same
   let { row: startRow, col: startCol } = chain[0];
   let baseValue = board[startRow][startCol];
   
@@ -699,10 +818,15 @@
     }
   }
 
-  // Add haptic feedback when merging tiles
-        if (window.FarcadeSDK) {
-          window.FarcadeSDK.singlePlayer.actions.hapticFeedback();
-        }
+  // Play merge sound
+  if (SoundManager.isInitialized) {
+    SoundManager.playMergeSound(chain.length);
+  }
+  
+  // Add haptic feedback when merging tiles (existing code)
+  if (window.FarcadeSDK) {
+    window.FarcadeSDK.singlePlayer.actions.hapticFeedback();
+  }
   
   // Final value and scoring remain the same
   let finalValue = baseValue * 2;
@@ -833,29 +957,53 @@
 }
 
       function handleStart(e) {
-        // Logic remains robust
-        if (!gameActive) return;
-        let target = e.target;
-        if (target.tagName === "IMG") target = target.parentElement;
-        const cell = target.closest(".game-cell");
-        if (!cell) return;
-        const position = getCellPosition(cell);
-        if (!position) return;
-        isDragging = true;
-        startCell = position;
-        const startValue = board[position.row][position.col];
-        previewCumulativeValueState = startValue;
-        previewBaseValue = startValue;
-        previewIdenticalChainLengthState = 1;
-        previewInitialIdenticalMet = false;
-        dragChain = [position];
-        const key = `${position.row},${position.col}`;
-        selectedCells.clear();
-        selectedCells.add(key);
-        const startEl = cellElements.get(key);
-        if (startEl) startEl.classList.add("highlight");
-        updatePreview();
-      }
+  if (!gameActive) return;
+
+  // Initialize audio on first interaction
+  if (!SoundManager.isInitialized) {
+    SoundManager.init();
+    // Unlock iOS audio restrictions by playing a silent sound within the user gesture
+    const silentBuffer = SoundManager.audioContext.createBuffer(1, 1, 22050);
+    const silentSource = SoundManager.audioContext.createBufferSource();
+    silentSource.buffer = silentBuffer;
+    silentSource.connect(SoundManager.audioContext.destination);
+    silentSource.start(0);
+    
+    // Also force resume the audio context (iOS requirement)
+    SoundManager.audioContext.resume();
+  }
+  
+  let target = e.target;
+  if (target.tagName === "IMG") target = target.parentElement;
+  const cell = target.closest(".game-cell");
+  if (!cell) return;
+  const position = getCellPosition(cell);
+  if (!position) return;
+  
+  isDragging = true;
+  startCell = position;
+  const startValue = board[position.row][position.col];
+  previewCumulativeValueState = startValue;
+  previewBaseValue = startValue;
+  previewIdenticalChainLengthState = 1;
+  previewInitialIdenticalMet = false;
+  dragChain = [position];
+  const key = `${position.row},${position.col}`;
+  selectedCells.clear();
+  selectedCells.add(key);
+  const startEl = cellElements.get(key);
+  if (startEl) startEl.classList.add("highlight");
+  
+  // Play sound on first tile selection - critical for iOS audio
+  SoundManager.playBubbleSound(1);
+  
+  // Add haptic feedback on first tile selection
+  if (window.FarcadeSDK) {
+    window.FarcadeSDK.singlePlayer.actions.hapticFeedback();
+  }
+  
+  updatePreview();
+}
 
       function recalculatePreviewValues() {
         // Logic remains robust
@@ -910,29 +1058,36 @@
         }
         if (selectedCells.has(cellKey)) return;
         if (isValidMove(currentCell)) {
-          const simResult = simulateAddTile(
-            previewCumulativeValueState,
-            previewBaseValue,
-            previewIdenticalChainLengthState,
-            previewInitialIdenticalMet,
-            board[currentCell.row][currentCell.col],
-          );
+    const simResult = simulateAddTile(
+      previewCumulativeValueState,
+      previewBaseValue,
+      previewIdenticalChainLengthState,
+      previewInitialIdenticalMet,
+      board[currentCell.row][currentCell.col],
+    );
           if (simResult.valid) {
             previewCumulativeValueState = simResult.cV;
             previewBaseValue = simResult.bV;
             previewIdenticalChainLengthState = simResult.iCL;
             previewInitialIdenticalMet = simResult.iIM;
             dragChain.push(currentCell);
-            selectedCells.add(cellKey);
-            const el = cellElements.get(cellKey);
-            if (el) el.classList.add("highlight");
+      selectedCells.add(cellKey);
+      const el = cellElements.get(cellKey);
+      if (el) el.classList.add("highlight");
 
-            // Add haptic feedback when adding to chain
-            if (window.FarcadeSDK) {
-              window.FarcadeSDK.singlePlayer.actions.hapticFeedback();
-            }
-            
-            updatePreview();
+      // Initialize audio on first interaction if needed
+      if (!SoundManager.isInitialized) {
+        SoundManager.init();
+      }
+      // Play bubble sound with pitch based on chain length
+      SoundManager.playBubbleSound(dragChain.length);
+      
+      // Add haptic feedback when adding to chain (existing code)
+      if (window.FarcadeSDK) {
+        window.FarcadeSDK.singlePlayer.actions.hapticFeedback();
+      }
+      
+      updatePreview();
           }
         }
       }
