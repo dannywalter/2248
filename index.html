@@ -156,6 +156,18 @@
       let gameActive = true;
       let highestValue = 0; // Track highest doodle rarity achieved
 
+      // Add Farcade SDK event listeners
+      if (window.FarcadeSDK) {
+        window.FarcadeSDK.on('play_again', () => {
+          restartGame();
+        });
+
+        window.FarcadeSDK.on('toggle_mute', (data) => {
+          // Game doesn't currently have sound, but handling the event
+          console.log("Mute state changed:", data.isMuted);
+        });
+      }
+
       let board = Array.from({ length: rows }, () => Array(cols).fill(null));
       let isDragging = false;
       let dragChain = [];
@@ -686,6 +698,11 @@
       return;
     }
   }
+
+  // Add haptic feedback when merging tiles
+        if (window.FarcadeSDK) {
+          window.FarcadeSDK.singlePlayer.actions.hapticFeedback();
+        }
   
   // Final value and scoring remain the same
   let finalValue = baseValue * 2;
@@ -909,28 +926,35 @@
             selectedCells.add(cellKey);
             const el = cellElements.get(cellKey);
             if (el) el.classList.add("highlight");
+
+            // Add haptic feedback when adding to chain
+            if (window.FarcadeSDK) {
+              window.FarcadeSDK.singlePlayer.actions.hapticFeedback();
+            }
+            
             updatePreview();
           }
         }
       }
 
       function handleEnd() {
-  if (!gameActive) return;
-  if (isDragging && dragChain.length >= 2) { // Changed to require only 2 identical tiles
-    processChain(dragChain);
-    movesLeft--;
-    if (movesLeft <= 0) {
-      gameActive = false;
-      console.log("GAME OVER - Score: " + score + ", Highest value: " + highestValue);
-      setTimeout(
-        () => alert(`Game Over!\nYour Score: ${score}\nHighest Tile: ${highestValue}\nPress R to Restart`),
-        500,
-      );
-    }
-  }
-  resetDrag();
-  resetPreview();
-}
+        if (!gameActive) return;
+        if (isDragging && dragChain.length >= 2) { // Changed to require only 2 identical tiles
+          processChain(dragChain);
+          movesLeft--;
+          if (movesLeft <= 0) {
+            gameActive = false;
+            console.log("GAME OVER - Score: " + score + ", Highest value: " + highestValue);
+            
+            // Only use Farcade SDK for game over notification, no alert
+            if (window.FarcadeSDK) {
+              window.FarcadeSDK.singlePlayer.actions.gameOver({ score: score });
+            }
+          }
+        }
+        resetDrag();
+        resetPreview();
+      }
 
       function getCellPosition(element) {
         // Logic remains robust
@@ -993,6 +1017,11 @@
         .then(() => {
           console.log("All images preloaded successfully.");
           initGameLogic();
+
+          // Signal to Farcade that the game is ready
+          if (window.FarcadeSDK) {
+            window.FarcadeSDK.singlePlayer.actions.ready();
+          }
         })
         .catch((error) => {
           console.error("Failed to preload images. Game cannot start.", error);
