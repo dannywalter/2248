@@ -915,7 +915,7 @@ const SoundManager = {
     SoundManager.playMergeSound(chain.length);
   }
   
-  // Add haptic feedback when merging tiles (existing code)
+  // Add haptic feedback when merging tiles
   if (window.FarcadeSDK) {
     window.FarcadeSDK.singlePlayer.actions.hapticFeedback();
   }
@@ -923,8 +923,78 @@ const SoundManager = {
   // Final value and scoring remain the same
   let finalValue = baseValue * 2;
   score += baseValue * chain.length;
+  
+  // Add bonus moves at 128, 512 or 4096 for the first time
+  if ((finalValue === 128 || finalValue === 512 || finalValue === 4096) && finalValue > highestValue) {
+    movesLeft = 25; // Reset moves to 25
+    showMoveBonus(finalValue); // Pass the value to customize the message
+  }
+  
   animateChainMerge(chain, finalValue);
   if (finalValue > highestValue) highestValue = finalValue;
+}
+
+// Updated function to show visual feedback for bonus moves with customized message
+function showMoveBonus(value) {
+  const movesBox = document.querySelector('.moves-box');
+  movesBox.classList.add('bonus-highlight');
+  
+  // Create a floating notification with milestone-specific text
+  const notification = document.createElement('div');
+  notification.className = 'bonus-notification';
+  
+  // Customize message based on the milestone reached
+  if (value === 128) {
+    notification.textContent = 'NICE! +25 MOVES!';
+  } else if (value === 512) {
+    notification.textContent = 'MILESTONE! +25 MOVES!';
+  } else if (value === 4096) {
+    notification.textContent = 'AMAZING! +25 MOVES!';
+  } else {
+    notification.textContent = '+25 MOVES!';
+  }
+  
+  notification.style.position = 'absolute';
+  notification.style.top = '50%';
+  notification.style.left = '50%';
+  notification.style.transform = 'translate(-50%, -50%)';
+  notification.style.background = 'rgba(255, 255, 102, 0.9)';
+  notification.style.color = '#000';
+  notification.style.padding = '10px 20px';
+  notification.style.borderRadius = '8px';
+  notification.style.fontWeight = 'bold';
+  notification.style.zIndex = '100';
+  notification.style.animation = 'fadeInOut 1.5s forwards';
+  gameBoard.appendChild(notification);
+  
+  // Add CSS animation if not already present
+  if (!document.getElementById('bonus-animation-styles')) {
+    const style = document.createElement('style');
+    style.id = 'bonus-animation-styles';
+    style.textContent = `
+      @keyframes fadeInOut {
+        0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+        20% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+        80% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+        100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+      }
+      .bonus-highlight {
+        animation: pulse-green 0.8s ease-in-out;
+      }
+      @keyframes pulse-green {
+        0% { background: rgba(0, 0, 0, 0.6); }
+        50% { background: rgba(40, 230, 40, 0.8); }
+        100% { background: rgba(0, 0, 0, 0.6); }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+  
+  // Remove the notification after animation completes
+  setTimeout(() => {
+    notification.remove();
+    movesBox.classList.remove('bonus-highlight');
+  }, 1500);
 }
 
       function applyChainRules(cV, bV, iCL, iIM, newValue) {
@@ -1126,30 +1196,44 @@ const SoundManager = {
       }
 
       function handleMove(e) {
-        // Logic remains robust
-        if (!isDragging || !gameActive || dragChain.length === 0) return;
-        let target = e.target;
-        if (target.tagName === "IMG") target = target.parentElement;
-        const cell = target.closest(".game-cell");
-        if (!cell) return;
-        const currentCell = getCellPosition(cell);
-        if (!currentCell) return;
-        const cellKey = `${currentCell.row},${currentCell.col}`;
-        if (dragChain.length > 1) {
-          const secondLastCell = dragChain[dragChain.length - 2];
-          if (secondLastCell.row === currentCell.row && secondLastCell.col === currentCell.col) {
-            const lastCellPopped = dragChain.pop();
-            const lastCellKey = `${lastCellPopped.row},${lastCellPopped.col}`;
-            selectedCells.delete(lastCellKey);
-            const lastEl = cellElements.get(lastCellKey);
-            if (lastEl) lastEl.classList.remove("highlight");
-            recalculatePreviewValues();
-            updatePreview();
-            return;
-          }
-        }
-        if (selectedCells.has(cellKey)) return;
-        if (isValidMove(currentCell)) {
+  if (!isDragging || !gameActive || dragChain.length === 0) return;
+  
+  let target = e.target;
+  if (target.tagName === "IMG") target = target.parentElement;
+  
+  // Get the cell or find the nearest cell using coordinates for better diagonal handling
+  let cell = target.closest(".game-cell");
+  if (!cell && e.clientX && e.clientY) {
+    // Find the nearest cell by coordinates for diagonal movements
+    cell = findNearestCellForDiagonal(e.clientX, e.clientY);
+  }
+  
+  if (!cell) return;
+  const currentCell = getCellPosition(cell);
+  if (!currentCell) return;
+  
+  const cellKey = `${currentCell.row},${currentCell.col}`;
+  
+  // Handle going backwards in the chain (unchanged)
+  if (dragChain.length > 1) {
+    const secondLastCell = dragChain[dragChain.length - 2];
+    if (secondLastCell.row === currentCell.row && secondLastCell.col === currentCell.col) {
+      const lastCellPopped = dragChain.pop();
+      const lastCellKey = `${lastCellPopped.row},${lastCellPopped.col}`;
+      selectedCells.delete(lastCellKey);
+      const lastEl = cellElements.get(lastCellKey);
+      if (lastEl) lastEl.classList.remove("highlight");
+      recalculatePreviewValues();
+      updatePreview();
+      return;
+    }
+  }
+  
+  // If already selected, just return
+  if (selectedCells.has(cellKey)) return;
+  
+  // The rest remains unchanged
+  if (isValidMove(currentCell)) {
     const simResult = simulateAddTile(
       previewCumulativeValueState,
       previewBaseValue,
@@ -1157,12 +1241,13 @@ const SoundManager = {
       previewInitialIdenticalMet,
       board[currentCell.row][currentCell.col],
     );
-          if (simResult.valid) {
-            previewCumulativeValueState = simResult.cV;
-            previewBaseValue = simResult.bV;
-            previewIdenticalChainLengthState = simResult.iCL;
-            previewInitialIdenticalMet = simResult.iIM;
-            dragChain.push(currentCell);
+    if (simResult.valid) {
+      // Existing code for valid moves...
+      previewCumulativeValueState = simResult.cV;
+      previewBaseValue = simResult.bV;
+      previewIdenticalChainLengthState = simResult.iCL;
+      previewInitialIdenticalMet = simResult.iIM;
+      dragChain.push(currentCell);
       selectedCells.add(cellKey);
       const el = cellElements.get(cellKey);
       if (el) el.classList.add("highlight");
@@ -1174,15 +1259,86 @@ const SoundManager = {
       // Play bubble sound with pitch based on chain length
       SoundManager.playBubbleSound(dragChain.length);
       
-      // Add haptic feedback when adding to chain (existing code)
+      // Add haptic feedback when adding to chain
       if (window.FarcadeSDK) {
         window.FarcadeSDK.singlePlayer.actions.hapticFeedback();
       }
       
       updatePreview();
+    }
+  }
+}
+
+// New helper function to find the nearest valid cell for diagonal movement
+function findNearestCellForDiagonal(clientX, clientY) {
+  // Convert client coordinates to board-relative coordinates
+  const boardRect = gameBoard.getBoundingClientRect();
+  const boardX = clientX - boardRect.left;
+  const boardY = clientY - boardRect.top;
+  
+  // If we have a last cell in the chain, prioritize diagonal movement
+  if (dragChain.length > 0) {
+    const lastCell = dragChain[dragChain.length - 1];
+    const lastCellKey = `${lastCell.row},${lastCell.col}`;
+    const lastCellEl = cellElements.get(lastCellKey);
+    
+    if (lastCellEl) {
+      const lastRect = lastCellEl.getBoundingClientRect();
+      
+      // Find all potential diagonal cells from the last selected cell
+      for (let r = Math.max(0, lastCell.row - 1); r <= Math.min(rows - 1, lastCell.row + 1); r++) {
+        for (let c = Math.max(0, lastCell.col - 1); c <= Math.min(cols - 1, lastCell.col + 1); c++) {
+          // Skip if it's the same cell or non-diagonal adjacent cell
+          if ((r === lastCell.row && c === lastCell.col) || 
+              (r === lastCell.row && Math.abs(c - lastCell.col) === 1) || 
+              (c === lastCell.col && Math.abs(r - lastCell.row) === 1)) {
+            continue;
+          }
+          
+          // Check if this diagonal cell is valid for the next move
+          const diagonalCell = {row: r, col: c};
+          if (isValidMove(diagonalCell)) {
+            const key = `${r},${c}`;
+            const el = cellElements.get(key);
+            if (el) {
+              const rect = el.getBoundingClientRect();
+              
+              // Check if pointer is near the cell (with extended buffer for diagonals)
+              const centerX = rect.left + rect.width / 2 - boardRect.left;
+              const centerY = rect.top + rect.height / 2 - boardRect.top;
+              const distance = Math.sqrt(Math.pow(boardX - centerX, 2) + Math.pow(boardY - centerY, 2));
+              
+              // If within a more generous radius (60% of tile size), consider it a hit
+              if (distance < TILE_SIZE * 0.6) {
+                return el;
+              }
+            }
           }
         }
       }
+    }
+  }
+
+  // Fallback to standard cell finding logic if no diagonal match
+  let closestCell = null;
+  let closestDistance = Infinity;
+  
+  // Iterate through all cell elements
+  cellElements.forEach((el, key) => {
+    const rect = el.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2 - boardRect.left;
+    const centerY = rect.top + rect.height / 2 - boardRect.top;
+    const distance = Math.sqrt(Math.pow(boardX - centerX, 2) + Math.pow(boardY - centerY, 2));
+    
+    // Use a standard hit radius
+    if (distance < TILE_SIZE * 0.5 && distance < closestDistance) {
+      closestCell = el;
+      closestDistance = distance;
+    }
+  });
+  
+  return closestCell;
+}
 
       function handleEnd() {
         if (!gameActive) return;
@@ -1227,17 +1383,21 @@ const SoundManager = {
         { passive: false },
       );
       gameBoard.addEventListener(
-        "touchmove",
-        (e) => {
-          if (e.touches.length > 0) {
-            const touch = e.touches[0];
-            const elementAtPoint = document.elementFromPoint(touch.clientX, touch.clientY);
-            handleMove({ target: elementAtPoint }); // Synthetic event
-            e.preventDefault();
-          }
-        },
-        { passive: false },
-      );
+  "touchmove",
+  (e) => {
+    if (e.touches.length > 0) {
+      const touch = e.touches[0];
+      const elementAtPoint = document.elementFromPoint(touch.clientX, touch.clientY);
+      handleMove({ 
+        target: elementAtPoint,
+        clientX: touch.clientX,
+        clientY: touch.clientY
+      }); // Enhanced synthetic event with coordinates
+      e.preventDefault();
+    }
+  },
+  { passive: false },
+);
       window.addEventListener("touchend", (e) => {
         if (isDragging) {
           handleEnd();
