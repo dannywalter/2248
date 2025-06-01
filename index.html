@@ -110,10 +110,10 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  visibility: hidden; /* Hidden when no preview */
   box-sizing: border-box;
   font-size: 12px; /* Smaller font size for all text in preview */
   color: rgba(255, 255, 255, 0.9);
+  visibility: visible !important; /* Ensure visibility */
 }
 
 .preview-img {
@@ -490,18 +490,47 @@ const SoundManager = {
       }
 
       function initGameLogic() {
-        // Renamed from init to be called after preloading
-        calculateTileSize();
-        board = Array.from({ length: rows }, () => Array(cols).fill(null));
+  // Renamed from init to be called after preloading
+  calculateTileSize();
+  board = Array.from({ length: rows }, () => Array(cols).fill(null));
+
+  // Generate 2-3 positions for value 8 tiles that are far apart
+  const eightPositions = [];
+  const numEights = Math.floor(Math.random() * 2) + 2; // 2-3 eights
+  
+  // Place 8s first to ensure they're distributed well
+  while (eightPositions.length < numEights) {
+    const r = Math.floor(Math.random() * rows);
+    const c = Math.floor(Math.random() * cols);
+    
+    // Check if this position is far enough from existing 8s
+    let isFarEnough = true;
+    for (const pos of eightPositions) {
+      // Manhattan distance - ensure at least 3 cells apart
+      const distance = Math.abs(pos.row - r) + Math.abs(pos.col - c);
+      if (distance < 3) {
+        isFarEnough = false;
+        break;
+      }
+    }
+    
+    if (isFarEnough) {
+      eightPositions.push({ row: r, col: c });
+    }
+  }
 
         const initialCells = [];
-        for (let r = 0; r < rows; r++) {
-          for (let c = 0; c < cols; c++) {
-            const val = getRandomTileValue();
-            board[r][c] = val;
-            initialCells.push({ row: r, col: c, value: val });
-          }
-        }
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      // Is this one of our designated 8 positions?
+      const isEightPosition = eightPositions.some(pos => pos.row === r && pos.col === c);
+      
+      // Assign value: 8 for special positions, otherwise 2 or 4
+      const val = isEightPosition ? 8 : (Math.random() < 0.6 ? 2 : 4);
+      board[r][c] = val;
+      initialCells.push({ row: r, col: c, value: val });
+    }
+  }
 
         gameBoard.innerHTML = "";
         cellElements.clear();
@@ -530,10 +559,17 @@ const SoundManager = {
         window.addEventListener("resize", window.resizeListener);
       }
 
-      function getRandomTileValue() {
-        const values = [2, 4, 8, 16, 32]; // Make sure 4 is possible if you want to see its image
-        return values[Math.floor(Math.random() * values.length)];
-      }
+      // Update this function (though it's not used directly)
+function getRandomTileValue() {
+  const values = [2, 4, 8];
+  return values[Math.floor(Math.random() * values.length)];
+}
+
+      // New function specifically for initial board generation
+function getInitialBoardTileValue() {
+  // For refills during gameplay, use mostly lower values
+  return Math.random() < 0.7 ? 2 : 4;
+}
 
       function getTileColor(value) {
         if (!value) return "#444";
@@ -880,23 +916,33 @@ const SoundManager = {
         return droppedCells;
       }
 
-      function refillBoard() {
-        // Logic remains robust
-        const newlyAddedCells = [];
-        for (let c = 0; c < cols; c++) {
-          for (let r = 0; r < rows; r++) {
-            if (board[r][c] === null) {
-              const newValue = getRandomTileValue();
-              board[r][c] = newValue;
-              newlyAddedCells.push({ row: r, col: c, value: newValue });
-            }
-          }
+      // Make sure refillBoard uses the updated probability distribution
+function refillBoard() {
+  const newlyAddedCells = [];
+  for (let c = 0; c < cols; c++) {
+    for (let r = 0; r < rows; r++) {
+      if (board[r][c] === null) {
+        // For refills, use mostly 2s and 4s (90% chance)
+        let newValue;
+        const rand = Math.random();
+        if (rand < 0.6) {
+          newValue = 2;
+        } else if (rand < 0.9) {
+          newValue = 4;
+        } else {
+          newValue = 8; // Only 10% chance for 8s
         }
-        return newlyAddedCells;
+        
+        board[r][c] = newValue;
+        newlyAddedCells.push({ row: r, col: c, value: newValue });
       }
+    }
+  }
+  return newlyAddedCells;
+}
 
       function processChain(chain) {
-  if (chain.length < 2) return; // Only require 2 identical tiles
+  if (chain.length < 2) return;
   
   let { row: startRow, col: startCol } = chain[0];
   let baseValue = board[startRow][startCol];
@@ -925,7 +971,7 @@ const SoundManager = {
   score += baseValue * chain.length;
   
   // Add bonus moves at 128, 512 or 4096 for the first time
-  if ((finalValue === 128 || finalValue === 512 || finalValue === 4096) && finalValue > highestValue) {
+  if ((finalValue === 128 || finalValue === 512 || finalValue === 1024) && finalValue > highestValue) {
     movesLeft = 25; // Reset moves to 25
     showMoveBonus(finalValue); // Pass the value to customize the message
   }
@@ -953,6 +999,9 @@ function showMoveBonus(value) {
   } else {
     notification.textContent = '+25 MOVES!';
   }
+
+  // UPDATE: After reaching a milestone, show the next milestone target
+  updateMilestonePreview();
   
   notification.style.position = 'absolute';
   notification.style.top = '50%';
@@ -997,6 +1046,46 @@ function showMoveBonus(value) {
   }, 1500);
 }
 
+function updateMilestonePreview() {
+  // Define the milestone progression
+  const milestones = [128, 512, 4096];
+  
+  // Find the next milestone based on current highest value
+  let nextMilestone = milestones[0];
+  for (const milestone of milestones) {
+    if (highestValue < milestone) {
+      nextMilestone = milestone;
+      break;
+    }
+  }
+  
+  // If we've reached all milestones, use the last one
+  if (highestValue >= milestones[milestones.length - 1]) {
+    nextMilestone = milestones[milestones.length - 1];
+  }
+  
+  // Clear and update the preview display
+  previewDisplay.innerHTML = '';
+  previewDisplay.style.visibility = "visible";
+  
+  // Add the text
+  const textSpan = document.createElement('span');
+  textSpan.textContent = "MERGE ";
+  previewDisplay.appendChild(textSpan);
+  
+  // Add the tile image
+  const milestoneImg = document.createElement('img');
+  milestoneImg.src = getPreloadedImageSrc(nextMilestone);
+  milestoneImg.alt = nextMilestone.toString();
+  milestoneImg.className = 'preview-img';
+  previewDisplay.appendChild(milestoneImg);
+  
+  // Add the bonus text
+  const bonusSpan = document.createElement('span');
+  bonusSpan.textContent = " FOR +25 MOVES";
+  previewDisplay.appendChild(bonusSpan);
+}
+
       function applyChainRules(cV, bV, iCL, iIM, newValue) {
   // Only allow identical values in a chain
   if (newValue === bV) {
@@ -1025,17 +1114,19 @@ function showMoveBonus(value) {
       }
 
       function resetPreview() {
-        // Logic remains robust
-        previewCumulativeValueState = null;
-        previewBaseValue = null;
-        previewIdenticalChainLengthState = 1;
-        previewInitialIdenticalMet = false;
-        previewDisplay.textContent = "";
-        previewDisplay.style.visibility = "hidden";
-      }
+  previewCumulativeValueState = null;
+  previewBaseValue = null;
+  previewIdenticalChainLengthState = 1;
+  previewInitialIdenticalMet = false;
+  
+  // Instead of hiding, show milestone preview
+  updateMilestonePreview();
+}
 
-      function updatePreview() {
+      // Modify updatePreview function to use the milestone preview when not dragging
+function updatePreview() {
   if (previewBaseValue !== null && dragChain.length >= 1) {
+    // During active dragging, show the chain preview as before
     const resultValue = previewBaseValue * 2;
     
     // Clear previous content
@@ -1072,7 +1163,8 @@ function showMoveBonus(value) {
       previewDisplay.appendChild(resultImg);
     }
   } else {
-    resetPreview();
+    // When not dragging, show milestone preview
+    updateMilestonePreview();
   }
 }
 
@@ -1424,6 +1516,7 @@ function findNearestCellForDiagonal(clientX, clientY) {
         .then(() => {
           console.log("All images preloaded successfully.");
           initGameLogic();
+          updateMilestonePreview(); // Initialize the milestone preview
 
           // Signal to Farcade that the game is ready
           if (window.FarcadeSDK) {
