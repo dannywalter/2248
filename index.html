@@ -242,6 +242,8 @@
       let selectedCells = new Set();
       let TILE_SIZE, TILE_GAP;
 
+      let achievedValues = new Set(); // Track which values player has unlocked
+
       let previewCumulativeValueState = null;
       let previewBaseValue = null;
       let previewIdenticalChainLengthState = 1;
@@ -970,14 +972,23 @@ function refillBoard() {
   let finalValue = baseValue * 2;
   score += baseValue * chain.length;
   
-  // Add bonus moves at 128, 512 or 4096 for the first time
-  if ((finalValue === 128 || finalValue === 512 || finalValue === 1024) && finalValue > highestValue) {
-    movesLeft = 25; // Reset moves to 25
-    showMoveBonus(finalValue); // Pass the value to customize the message
-  }
+  // Mini-rewards for new character achievements (16, 32, 64)
+if ((finalValue === 16 || finalValue === 32 || finalValue === 64) && !achievedValues.has(finalValue)) {
+  achievedValues.add(finalValue);
+  movesLeft += 5; // Add 5 bonus moves
+  showMoveBonus(finalValue); // Pass the value to customize the message
+}
+// Major milestone rewards (128, 256, 512, 4096)
+else if ((finalValue === 128 || finalValue === 256 || finalValue === 512 || finalValue === 4096) && finalValue > highestValue) {
+  movesLeft += 25; // Add 25 bonus moves 
+  showMoveBonus(finalValue); // Pass the value to customize the message
+}
   
   animateChainMerge(chain, finalValue);
   if (finalValue > highestValue) highestValue = finalValue;
+  
+  // Track that this value has been achieved
+  achievedValues.add(finalValue);
 }
 
 // Updated function to show visual feedback for bonus moves with customized message
@@ -990,15 +1001,19 @@ function showMoveBonus(value) {
   notification.className = 'bonus-notification';
   
   // Customize message based on the milestone reached
-  if (value === 128) {
-    notification.textContent = 'NICE! +25 MOVES!';
-  } else if (value === 512) {
-    notification.textContent = 'MILESTONE! +25 MOVES!';
-  } else if (value === 4096) {
-    notification.textContent = 'AMAZING! +25 MOVES!';
-  } else {
-    notification.textContent = '+25 MOVES!';
-  }
+if (value === 16 || value === 32 || value === 64) {
+  notification.textContent = 'NEW CHARACTER! +5 MOVES!';
+} else if (value === 128) {
+  notification.textContent = 'NICE! +25 MOVES!';
+} else if (value === 256) {
+  notification.textContent = 'AWESOME! +25 MOVES!';
+} else if (value === 512) {
+  notification.textContent = 'MILESTONE! +25 MOVES!';
+} else if (value === 4096) {
+  notification.textContent = 'AMAZING! +25 MOVES!';
+} else {
+  notification.textContent = '+25 MOVES!';
+}
 
   // UPDATE: After reaching a milestone, show the next milestone target
   updateMilestonePreview();
@@ -1070,7 +1085,7 @@ function updateMilestonePreview() {
   
   // Add the text
   const textSpan = document.createElement('span');
-  textSpan.textContent = "MERGE ";
+  textSpan.textContent = "MAKE ";
   previewDisplay.appendChild(textSpan);
   
   // Add the tile image
@@ -1508,6 +1523,7 @@ function findNearestCellForDiagonal(clientX, clientY) {
         gameActive = true;
         highestValue = 0;
         score = 0;
+        achievedValues.clear(); // Reset the achievements
         initGameLogic(); // Call the renamed init function
       }
 
