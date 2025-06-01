@@ -47,36 +47,87 @@
         overflow: hidden;
       }
 
-      #preview-display {
-        min-height: 30px;
-        line-height: 30px;
-        visibility: hidden; /* Hidden when no preview */
-        transition: opacity 0.3s;
-        margin-bottom: 5px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 5px;
-      }
+      /* Game header styling */
+      .game-header {
+  width: 100%;
+  padding: 0px;
+  margin-bottom: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  gap: 5px;
+}
 
-      .preview-img {
-        height: 24px;
-        width: 24px;
-        object-fit: contain;
-        vertical-align: middle;
-        border-radius: 3px;
-      }
+.logo-container {
+  width: 60%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0px;
+}
 
-      .score-display {
-        font-size: 20px;
-        font-weight: bold;
-        margin-bottom: 10px;
-      }
+.game-logo {
+  max-width: 80%;
+  height: auto;
+  margin: 0 auto;
+}
 
+.stats-row {
+  width: 50%;
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.stat-box {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 8px;
+  padding: 0px;
+  text-align: center;
+}
+
+.stat-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #999;
+  margin-bottom: 0px;
+}
+
+.stat-value {
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+}
+
+#preview-display {
+  width: 50%;
+  min-height: 30px;
+  padding: 0px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  visibility: hidden; /* Hidden when no preview */
+  box-sizing: border-box;
+  font-size: 12px; /* Smaller font size for all text in preview */
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.preview-img {
+  height: 26px;
+  width: 26px;
+  object-fit: contain;
+  vertical-align: middle;
+  border-radius: 5px;
+}
+      
+      /* We can remove these old styles */
+      .score-display,
       .moves-display {
-        font-size: 20px;
-        font-weight: bold;
-        margin-bottom: 10px;
+        display: none;
       }
 
       #game-board {
@@ -142,11 +193,24 @@
   </head>
   <body>
     <div class="game-container">
-      <div id="preview-display"></div>
-      <div class="score-display">Score: <span id="score-value">0</span></div>
-      <div class="moves-display">Moves: <span id="moves-value">25</span></div>
-      <div id="game-board"></div>
+  <div class="game-header">
+    <div class="logo-container">
+      <img src="https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/dooplicates-title-curve-3tpe01kxDQ4brnHGSNXzaxsK4WDfYd.png" alt="Dooplicates" class="game-logo">
     </div>
+    <div class="stats-row">
+      <div class="stat-box score-box">
+        <div class="stat-label">SCORE</div>
+        <div class="stat-value" id="score-value">0</div>
+      </div>
+      <div class="stat-box moves-box">
+        <div class="stat-label">MOVES</div>
+        <div class="stat-value" id="moves-value">25</div>
+      </div>
+    </div>
+    <div id="preview-display"></div>
+  </div>
+  <div id="game-board"></div>
+</div>
     <script>
       const rows = 7;
       const cols = 5;
@@ -568,7 +632,7 @@ const SoundManager = {
       function renderBoard(isInitialLayout = false, droppedCells = [], newlyAddedCells = [], mergeTargetKey = null) {
         scoreDisplay.textContent = score;
         movesDisplay.textContent = movesLeft;
-
+        
         const processedDomKeys = new Set();
 
         if (isInitialLayout) {
