@@ -225,7 +225,7 @@
     <div class="game-container">
   <div class="game-header">
     <div class="logo-container">
-      <img src="https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/dooplicates-logo-white-8bsxymm2CNmvF9d7518d7ohzoyfh9W.png" alt="Dooplicates" class="game-logo">
+      <img src="https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/Dooplicates-Splash-new-s2c194p6UxyS1Pu9lfZeshwqHtEW92.png" alt="Dooplicates" class="game-logo">
     </div>
     <div class="stats-row">
       <div class="stat-box score-box">
@@ -356,7 +356,8 @@
 const SoundManager = {
   sounds: {
     bubble: null,
-    merge: null
+    merge: null,
+    win: null  // Add the win sound property
   },
   audioContext: null,
   isMuted: false,
@@ -394,6 +395,11 @@ const SoundManager = {
     this.loadSound("https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/bubble-pop-cut-8nhjPeMO2tjo3gXeY5e1Hr54ySh1ep.mp3")
       .then(buffer => this.sounds.merge = buffer)
       .catch(e => console.warn("Failed to load merge sound", e));
+
+      // Load win fanfare sound
+  this.loadSound("https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/fanfare-46385-jGzg7AupAWtjax4hz1mnmpzoSJaobY.mp3")
+    .then(buffer => this.sounds.win = buffer)
+    .catch(e => console.warn("Failed to load win sound", e));
   },
   
   // Fetch and decode a single sound
@@ -459,6 +465,27 @@ const SoundManager = {
     gainNode.connect(this.gainNode);
     source.start(0);
   },
+
+  // Play the win fanfare sound
+playWinSound() {
+  if (!this.isInitialized || this.isMuted || !this.sounds.win) return;
+  
+  // Resume audio context if suspended
+  if (this.audioContext.state === 'suspended') {
+    this.audioContext.resume();
+  }
+  
+  const source = this.audioContext.createBufferSource();
+  source.buffer = this.sounds.win;
+  
+  // Set volume
+  const gainNode = this.audioContext.createGain();
+  gainNode.gain.value = 0.7; // Good volume for fanfare
+  
+  source.connect(gainNode);
+  gainNode.connect(this.gainNode);
+  source.start(0);
+},
   
   // Set mute state
   setMute(isMuted) {
@@ -1019,9 +1046,15 @@ function refillBoard() {
   }
   // Major milestone rewards (128, 256, 512, 4096)
   else if ((finalValue === 128 || finalValue === 256 || finalValue === 512 || finalValue === 4096) && finalValue > highestValue) {
-    movesLeft += 25; // Add 25 bonus moves 
-    showMoveBonus(finalValue); // Pass the value to customize the message
-  }
+  movesLeft += 25; // Add 25 bonus moves 
+  showMoveBonus(finalValue); // Pass the value to customize the message
+}
+// Special win condition for 8192
+else if (finalValue === 8192 && finalValue > highestValue) {
+  // Show the win screen instead of continuing the game
+  showWinNotification();
+  // Don't increment moves as the game is ending
+}
   
   animateChainMerge(chain, finalValue);
   if (finalValue > highestValue) highestValue = finalValue;
@@ -1197,6 +1230,153 @@ function showMoveBonus(value, isBoardClear = false, isValueClear = false, cleare
     notification.remove();
     movesBox.classList.remove('bonus-highlight');
   }, 1500);
+}
+
+function showWinNotification() {
+  // Set game as inactive to prevent further moves
+  gameActive = false;
+  
+  // Create the overlay container
+  const overlay = document.createElement('div');
+  overlay.className = 'win-overlay';
+  overlay.style.position = 'fixed';
+  overlay.style.top = '0';
+  overlay.style.left = '0';
+  overlay.style.width = '100%';
+  overlay.style.height = '100%';
+  overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.85)';
+  overlay.style.zIndex = '1000';
+  overlay.style.display = 'flex';
+  overlay.style.flexDirection = 'column';
+  overlay.style.justifyContent = 'center';
+  overlay.style.alignItems = 'center';
+  overlay.style.animation = 'fadeIn 0.5s ease-in';
+  
+  // Add the YOU WIN! text
+  const winText = document.createElement('div');
+  winText.textContent = 'YOU WIN!';
+  winText.style.color = '#FFFFFF';
+  winText.style.fontSize = '36px';
+  winText.style.fontWeight = 'bold';
+  winText.style.marginBottom = '20px';
+  winText.style.animation = 'scaleIn 0.8s ease-out';
+  overlay.appendChild(winText);
+  
+  // Create container for the image and glow
+  const imageContainer = document.createElement('div');
+  imageContainer.className = 'image-container';
+  imageContainer.style.position = 'relative';
+  imageContainer.style.marginBottom = '30px';
+  imageContainer.style.width = '150px';
+  imageContainer.style.height = '150px';
+  imageContainer.style.display = 'flex';
+  imageContainer.style.justifyContent = 'center';
+  imageContainer.style.alignItems = 'center';
+  
+  // Create circular glow background element
+  const glowCircle = document.createElement('div');
+  glowCircle.className = 'glow-circle';
+  glowCircle.style.position = 'absolute';
+  glowCircle.style.width = '130px';
+  glowCircle.style.height = '130px';
+  glowCircle.style.borderRadius = '50%';
+  glowCircle.style.background = '#71FFB8';
+  glowCircle.style.filter = 'blur(15px)';
+  glowCircle.style.opacity = '0.7';
+  glowCircle.style.animation = 'spin 12s linear infinite';
+  imageContainer.appendChild(glowCircle);
+  
+  // Add the 8192 image on top
+  const image = document.createElement('img');
+  image.src = getPreloadedImageSrc(8192);
+  image.alt = '8192';
+  image.style.width = '120px';
+  image.style.height = '120px';
+  image.style.position = 'relative';
+  image.style.animation = 'pulse 2s infinite';
+  imageContainer.appendChild(image);
+  
+  overlay.appendChild(imageContainer);
+  
+  // Add the SUBMIT SCORE button
+  const submitButton = document.createElement('button');
+  submitButton.textContent = 'SUBMIT SCORE';
+  submitButton.style.backgroundColor = '#71FFB8';
+  submitButton.style.border = 'none';
+  submitButton.style.borderRadius = '8px';
+  submitButton.style.padding = '15px 30px';
+  submitButton.style.fontSize = '18px';
+  submitButton.style.fontWeight = 'bold';
+  submitButton.style.color = '#000000';
+  submitButton.style.cursor = 'pointer';
+  submitButton.style.marginTop = '20px';
+  submitButton.style.animation = 'scaleIn 0.8s ease-out 0.3s both';
+  submitButton.style.boxShadow = '0 0 15px rgba(113, 255, 184, 0.6)';
+  
+  // Add hover effect
+  submitButton.addEventListener('mouseover', () => {
+    submitButton.style.backgroundColor = '#53EACD';
+    submitButton.style.transform = 'scale(1.05)';
+  });
+  submitButton.addEventListener('mouseout', () => {
+    submitButton.style.backgroundColor = '#71FFB8';
+    submitButton.style.transform = 'scale(1)';
+  });
+  
+  // Add the game_over action when clicked
+  submitButton.addEventListener('click', () => {
+    // Add haptic feedback
+    if (window.FarcadeSDK) {
+      window.FarcadeSDK.singlePlayer.actions.hapticFeedback();
+    }
+    
+    // Submit the score
+    if (window.FarcadeSDK) {
+      window.FarcadeSDK.singlePlayer.actions.gameOver({ score: score });
+    }
+  });
+  
+  overlay.appendChild(submitButton);
+  
+  // Add animations CSS if not already present
+  if (!document.getElementById('win-animation-styles')) {
+    const style = document.createElement('style');
+    style.id = 'win-animation-styles';
+    style.textContent = `
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      @keyframes scaleIn {
+        0% { transform: scale(0); opacity: 0; }
+        80% { transform: scale(1.1); opacity: 1; }
+        100% { transform: scale(1); opacity: 1; }
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      @keyframes pulse {
+        0% { transform: scale(1); filter: brightness(1); }
+        50% { transform: scale(1.1); filter: brightness(1.2); }
+        100% { transform: scale(1); filter: brightness(1); }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+  
+  // Add to document
+  document.body.appendChild(overlay);
+  
+  // Play the special fanfare win sound
+  if (SoundManager.isInitialized) {
+    SoundManager.playWinSound();
+  }
+  
+  // Add haptic feedback
+  if (window.FarcadeSDK) {
+    window.FarcadeSDK.singlePlayer.actions.hapticFeedback();
+  }
 }
 
 function updateMilestonePreview() {
@@ -1725,6 +1905,13 @@ function showLowMovesWarning() {
       });
 
       function restartGame() {
+
+        // Remove the win notification overlay if it exists
+  const winOverlay = document.querySelector('.win-overlay');
+  if (winOverlay) {
+    winOverlay.remove();
+  }
+
   // Logic remains robust
   movesLeft = 25;
   gameActive = true;
