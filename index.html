@@ -958,6 +958,10 @@ function refillBoard() {
     }
   }
 
+  // Count how many tiles of this value exist on the board
+  const totalOfThisValue = countTilesOfValue(baseValue);
+  const clearedAllOfValue = chain.length === totalOfThisValue;
+  
   // Play merge sound
   if (SoundManager.isInitialized) {
     SoundManager.playMergeSound(chain.length);
@@ -972,17 +976,22 @@ function refillBoard() {
   let finalValue = baseValue * 2;
   score += baseValue * chain.length;
   
+  // Check for "cleared all of this value" bonus
+  if (clearedAllOfValue && chain.length >= 3) {
+    movesLeft += 5; // Add 5 bonus moves
+    showMoveBonus(0, false, true, baseValue); // Pass special flag for value clear
+  }
   // Mini-rewards for new character achievements (16, 32, 64)
-if ((finalValue === 16 || finalValue === 32 || finalValue === 64) && !achievedValues.has(finalValue)) {
-  achievedValues.add(finalValue);
-  movesLeft += 5; // Add 5 bonus moves
-  showMoveBonus(finalValue); // Pass the value to customize the message
-}
-// Major milestone rewards (128, 256, 512, 4096)
-else if ((finalValue === 128 || finalValue === 256 || finalValue === 512 || finalValue === 4096) && finalValue > highestValue) {
-  movesLeft += 25; // Add 25 bonus moves 
-  showMoveBonus(finalValue); // Pass the value to customize the message
-}
+  else if ((finalValue === 16 || finalValue === 32 || finalValue === 64) && !achievedValues.has(finalValue)) {
+    achievedValues.add(finalValue);
+    movesLeft += 5; // Add 5 bonus moves
+    showMoveBonus(finalValue); // Pass the value to customize the message
+  }
+  // Major milestone rewards (128, 256, 512, 4096)
+  else if ((finalValue === 128 || finalValue === 256 || finalValue === 512 || finalValue === 4096) && finalValue > highestValue) {
+    movesLeft += 25; // Add 25 bonus moves 
+    showMoveBonus(finalValue); // Pass the value to customize the message
+  }
   
   animateChainMerge(chain, finalValue);
   if (finalValue > highestValue) highestValue = finalValue;
@@ -991,29 +1000,65 @@ else if ((finalValue === 128 || finalValue === 256 || finalValue === 512 || fina
   achievedValues.add(finalValue);
 }
 
-// Updated function to show visual feedback for bonus moves with customized message
-function showMoveBonus(value) {
+// Helper function to count tiles of a specific value on the board
+function countTilesOfValue(value) {
+  let count = 0;
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      if (board[r][c] === value) {
+        count++;
+      }
+    }
+  }
+  return count;
+}
+
+// Update the showMoveBonus function to handle the value clear bonus
+function showMoveBonus(value, isBoardClear = false, isValueClear = false, clearedValue = null) {
   const movesBox = document.querySelector('.moves-box');
   movesBox.classList.add('bonus-highlight');
   
   // Create a floating notification with milestone-specific text
   const notification = document.createElement('div');
   notification.className = 'bonus-notification';
+  notification.style.display = 'flex';
+  notification.style.alignItems = 'center';
+  notification.style.justifyContent = 'center';
+  notification.style.gap = '5px';
   
   // Customize message based on the milestone reached
-if (value === 16 || value === 32 || value === 64) {
-  notification.textContent = 'NEW CHARACTER! +5 MOVES!';
-} else if (value === 128) {
-  notification.textContent = 'NICE! +25 MOVES!';
-} else if (value === 256) {
-  notification.textContent = 'AWESOME! +25 MOVES!';
-} else if (value === 512) {
-  notification.textContent = 'MILESTONE! +25 MOVES!';
-} else if (value === 4096) {
-  notification.textContent = 'AMAZING! +25 MOVES!';
-} else {
-  notification.textContent = '+25 MOVES!';
-}
+  if (isValueClear && clearedValue !== null) {
+    // Create first part of the text
+    const textPart1 = document.createElement('span');
+    textPart1.textContent = 'ALL ';
+    notification.appendChild(textPart1);
+    
+    // Create and append the image
+    const tileImg = document.createElement('img');
+    tileImg.src = getPreloadedImageSrc(clearedValue);
+    tileImg.alt = clearedValue.toString();
+    tileImg.className = 'preview-img';
+    notification.appendChild(tileImg);
+    
+    // Create second part of the text
+    const textPart2 = document.createElement('span');
+    textPart2.textContent = CLEARED! +5 MOVES!';
+    notification.appendChild(textPart2);
+    
+    notification.style.background = 'rgba(255, 215, 0, 0.9)'; // Gold color for special achievement
+  } else if (value === 16 || value === 32 || value === 64) {
+    notification.textContent = 'NEW CHARACTER! +5 MOVES!';
+  } else if (value === 128) {
+    notification.textContent = 'NICE! +25 MOVES!';
+  } else if (value === 256) {
+    notification.textContent = 'AWESOME! +25 MOVES!';
+  } else if (value === 512) {
+    notification.textContent = 'MILESTONE! +25 MOVES!';
+  } else if (value === 4096) {
+    notification.textContent = 'AMAZING! +25 MOVES!';
+  } else {
+    notification.textContent = '+25 MOVES!';
+  }
 
   // UPDATE: After reaching a milestone, show the next milestone target
   updateMilestonePreview();
@@ -1448,23 +1493,83 @@ function findNearestCellForDiagonal(clientX, clientY) {
 }
 
       function handleEnd() {
-        if (!gameActive) return;
-        if (isDragging && dragChain.length >= 2) { // Changed to require only 2 identical tiles
-          processChain(dragChain);
-          movesLeft--;
-          if (movesLeft <= 0) {
-            gameActive = false;
-            console.log("GAME OVER - Score: " + score + ", Highest value: " + highestValue);
-            
-            // Only use Farcade SDK for game over notification, no alert
-            if (window.FarcadeSDK) {
-              window.FarcadeSDK.singlePlayer.actions.gameOver({ score: score });
-            }
+  if (!gameActive) return;
+  if (isDragging && dragChain.length >= 2) {
+    // Process the chain first, which will queue up animations and bonuses
+    processChain(dragChain);
+    
+    // Decrement moves AFTER processing the chain
+    movesLeft--;
+    
+    // Check moves state after a slight delay to ensure
+    // any bonus moves have been applied
+    setTimeout(() => {
+      if (movesLeft <= 0) {
+        gameActive = false;
+        console.log("GAME OVER - Score: " + score + ", Highest value: " + highestValue);
+        
+        // No "Out of Moves!" message, just delay the Farcade game over call slightly
+        setTimeout(() => {
+          if (window.FarcadeSDK) {
+            window.FarcadeSDK.singlePlayer.actions.gameOver({ score: score });
           }
-        }
-        resetDrag();
-        resetPreview();
+        }, 500); // Brief delay to ensure animations complete
+      } 
+      else if (movesLeft === 5) {
+        // Show warning message at exactly 5 moves left
+        showLowMovesWarning();
       }
+    }, 350); // Slightly longer than the chain merge animation
+  }
+  resetDrag();
+  resetPreview();
+}
+
+// Function to show warning message at 5 moves left
+function showLowMovesWarning() {
+  const notification = document.createElement('div');
+  notification.className = 'moves-warning-notification';
+  notification.textContent = '5 MOVES LEFT!';
+  
+  notification.style.position = 'absolute';
+  notification.style.top = '50%';
+  notification.style.left = '50%';
+  notification.style.transform = 'translate(-50%, -50%)';
+  notification.style.background = 'rgba(255, 215, 0, 0.9)'; // Gold color for warning
+  notification.style.color = 'black';
+  notification.style.padding = '12px 25px';
+  notification.style.borderRadius = '8px';
+  notification.style.fontWeight = 'bold';
+  notification.style.fontSize = '22px';
+  notification.style.zIndex = '100';
+  notification.style.animation = 'fadeInWarning 2s forwards';
+  gameBoard.appendChild(notification);
+  
+  // Add CSS animation if not already present
+  if (!document.getElementById('warning-animation-styles')) {
+    const style = document.createElement('style');
+    style.id = 'warning-animation-styles';
+    style.textContent = `
+      @keyframes fadeInWarning {
+        0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+        20% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+        80% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+        100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+  
+  // Add haptic feedback for the warning
+  if (window.FarcadeSDK) {
+    window.FarcadeSDK.singlePlayer.actions.hapticFeedback();
+  }
+  
+  // Remove the notification after animation completes
+  setTimeout(() => {
+    notification.remove();
+  }, 2000);
+}
 
       function getCellPosition(element) {
         // Logic remains robust
@@ -1518,14 +1623,17 @@ function findNearestCellForDiagonal(clientX, clientY) {
       });
 
       function restartGame() {
-        // Logic remains robust
-        movesLeft = 25;
-        gameActive = true;
-        highestValue = 0;
-        score = 0;
-        achievedValues.clear(); // Reset the achievements
-        initGameLogic(); // Call the renamed init function
-      }
+  // Logic remains robust
+  movesLeft = 25;
+  gameActive = true;
+  highestValue = 0;
+  score = 0;
+  achievedValues.clear(); // Reset the achievements
+  initGameLogic(); // Call the renamed init function
+  
+  // Explicitly update the milestone preview after game restart
+  updateMilestonePreview();
+}
 
       // Start the game after images are preloaded
       preloadAllImages()
