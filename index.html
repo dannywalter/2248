@@ -1044,8 +1044,8 @@ function refillBoard() {
     movesLeft += 5; // Add 5 bonus moves
     showMoveBonus(finalValue); // Pass the value to customize the message
   }
-  // Major milestone rewards (128, 256, 512, 4096)
-  else if ((finalValue === 128 || finalValue === 256 || finalValue === 512 || finalValue === 4096) && finalValue > highestValue) {
+  // Major milestone rewards (128, 256, 512, 1024, 2048, 4096)
+  else if ((finalValue === 128 || finalValue === 256 || finalValue === 512 || finalValue === 1024 || finalValue === 2048 || finalValue === 4096) && finalValue > highestValue) {
   movesLeft += 25; // Add 25 bonus moves 
   showMoveBonus(finalValue); // Pass the value to customize the message
 }
@@ -1161,7 +1161,19 @@ function showMoveBonus(value, isBoardClear = false, isValueClear = false, cleare
     notification.style.alignItems = 'center';
     notification.style.justifyContent = 'center';
     backgroundColor = getTileColor(value);
-  } else {
+  } else if (value === 1024) {
+    notification.textContent = 'INCREDIBLE! +25 MOVES!';
+    notification.style.display = 'flex';
+    notification.style.alignItems = 'center';
+    notification.style.justifyContent = 'center';
+    backgroundColor = getTileColor(value);
+  } else if (value === 2048) {
+    notification.textContent = 'LEGENDARY! +25 MOVES!';
+    notification.style.display = 'flex';
+    notification.style.alignItems = 'center';
+    notification.style.justifyContent = 'center';
+    backgroundColor = getTileColor(value);
+  }else {
     notification.textContent = '+25 MOVES!';
     notification.style.display = 'flex';
     notification.style.alignItems = 'center';
@@ -1280,7 +1292,7 @@ function showWinNotification() {
   glowCircle.style.width = '130px';
   glowCircle.style.height = '130px';
   glowCircle.style.borderRadius = '50%';
-  glowCircle.style.background = '#71FFB8';
+  glowCircle.style.background = '#FFE780';
   glowCircle.style.filter = 'blur(15px)';
   glowCircle.style.opacity = '0.7';
   glowCircle.style.animation = 'spin 12s linear infinite';
@@ -1301,9 +1313,9 @@ function showWinNotification() {
   // Add the SUBMIT SCORE button
   const submitButton = document.createElement('button');
   submitButton.textContent = 'SUBMIT SCORE';
-  submitButton.style.backgroundColor = '#71FFB8';
+  submitButton.style.backgroundColor = '#ff7bd7';
   submitButton.style.border = 'none';
-  submitButton.style.borderRadius = '8px';
+  submitButton.style.borderRadius = '50px';
   submitButton.style.padding = '15px 30px';
   submitButton.style.fontSize = '18px';
   submitButton.style.fontWeight = 'bold';
@@ -1311,15 +1323,15 @@ function showWinNotification() {
   submitButton.style.cursor = 'pointer';
   submitButton.style.marginTop = '20px';
   submitButton.style.animation = 'scaleIn 0.8s ease-out 0.3s both';
-  submitButton.style.boxShadow = '0 0 15px rgba(113, 255, 184, 0.6)';
+  submitButton.style.boxShadow = '0 0 20px 10px rgba(255, 173, 222, 0.6)';
   
   // Add hover effect
   submitButton.addEventListener('mouseover', () => {
-    submitButton.style.backgroundColor = '#53EACD';
+    submitButton.style.backgroundColor = '#ffadde';
     submitButton.style.transform = 'scale(1.05)';
   });
   submitButton.addEventListener('mouseout', () => {
-    submitButton.style.backgroundColor = '#71FFB8';
+    submitButton.style.backgroundColor = '#ff7bd7';
     submitButton.style.transform = 'scale(1)';
   });
   
@@ -1381,7 +1393,7 @@ function showWinNotification() {
 
 function updateMilestonePreview() {
   // Define the milestone progression
-  const milestones = [128, 512, 4096];
+  const milestones = [128, 256, 512, 1024, 2048, 4096];
   
   // Find the next milestone based on current highest value
   let nextMilestone = milestones[0];
