@@ -129,7 +129,7 @@
       }
 
       #preview-display {
-        width: 65%; /* Increased from 50% to accommodate equations */
+        width: 80%; /* Increased from 50% to accommodate equations */
         min-height: 30px;
         padding: 5px;
         border-radius: 8px;
@@ -150,12 +150,6 @@
         object-fit: contain;
         vertical-align: middle;
         border-radius: 5px;
-      }
-
-      /* We can remove these old styles */
-      .score-display,
-      .moves-display {
-        display: none;
       }
 
       #game-board {
@@ -207,10 +201,10 @@
 
       .music-toggle {
         position: fixed;
-        top: 55px;
-        right: 15px;
-        width: 36px;
-        height: 36px;
+        top: 50px;
+        right: 1.1rem;
+        width: 20px;
+        height: 20px;
         background-color: rgba(0, 0, 0, 0.6);
         border-radius: 50%;
         display: flex;
@@ -484,7 +478,7 @@
 
           // Connect to the music gain node
           this.musicSource.connect(this.musicGainNode);
-          this.musicGainNode.gain.value = 0.3; // Lower volume for background music
+          this.musicGainNode.gain.value = 0.2; // Lower volume for background music
 
           // Start the music
           this.musicSource.start(0);
@@ -513,7 +507,7 @@
             // If unmuting, either set gain back to normal or start if not playing
             if (this.musicSource && this.musicGainNode) {
               // Music is already playing, just unmute it
-              this.musicGainNode.gain.value = 0.3;
+              this.musicGainNode.gain.value = 0.2;
             } else {
               // No music source, need to start playing
               this.playBackgroundMusic();
@@ -648,23 +642,28 @@
 
         // Set mute state
         setMute(isMuted) {
-          this.isMuted = isMuted;
-          if (this.gainNode) {
-            this.gainNode.gain.value = isMuted ? 0 : 1;
-          }
+  this.isMuted = isMuted;
+  if (this.gainNode) {
+    this.gainNode.gain.value = isMuted ? 0 : 1;
+  }
 
-          // Handle background music based on mute state
-          if (isMuted) {
-            // When using Farcade mute (global mute), actually stop the music
-            this.pauseBackgroundMusic(false);
-          } else if (!this.isMusicMuted) {
-            // Only restart music if music specifically isn't muted
-            this.playBackgroundMusic();
-          }
+  // Handle background music based on mute state
+  if (isMuted) {
+    // Instead of stopping the music, just set gain to 0 and keep the source
+    this.pauseBackgroundMusic(true); // Pass true to keep the source
+  } else if (!this.isMusicMuted) {
+    // If the source exists, just restore the gain instead of recreating
+    if (this.musicSource && this.musicGainNode) {
+      this.musicGainNode.gain.value = 0.2;
+    } else {
+      // Only create a new source if none exists
+      this.playBackgroundMusic();
+    }
+  }
 
-          // Update the music button to reflect current state
-          this.updateMusicButtonState();
-        },
+  // Update the music button to reflect current state
+  this.updateMusicButtonState();
+},
       };
 
       const imageValues = Object.keys(preloadedImages).map(Number); // e.g., [2, 4]
@@ -1204,10 +1203,7 @@
         let finalValue = baseValue * 2;
         score += baseValue * chain.length;
 
-        // Update the highest value the player has created
-        if (finalValue > highestValue) {
-          highestValue = finalValue;
-        }
+        
 
         // Check for "cleared all of this value" bonus
         if (clearedAllOfValue && chain.length >= 3) {
@@ -1693,7 +1689,7 @@
             bonusText.textContent = "(BONUS +25 MOVES)";
             bonusText.style.marginLeft = "4px";
             bonusText.style.fontSize = "10px";
-            bonusText.style.color = "#FFE780"; // Gold color for emphasis
+            bonusText.style.color = "#FFF";
             previewDisplay.appendChild(bonusText);
           }
         }
