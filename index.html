@@ -34,31 +34,31 @@
       }
 
       .splash-screen {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1000; /* Above everything else */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #191919;
-  cursor: pointer;
-  transition: opacity 0.5s ease-out;
-}
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1000; /* Above everything else */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #191919;
+        cursor: pointer;
+        transition: opacity 0.5s ease-out;
+      }
 
-.splash-image {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-}
+      .splash-image {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+      }
 
-/* Hide game elements until splash is dismissed */
-.splash-active .game-header,
-.splash-active #game-board {
-  visibility: hidden;
-}
+      /* Hide game elements until splash is dismissed */
+      .splash-active .game-header,
+      .splash-active #game-board {
+        visibility: hidden;
+      }
 
       /* New container to limit game size */
       .game-container {
@@ -76,81 +76,82 @@
 
       /* Game header styling */
       .game-header {
-  width: 100%;
-  padding: 0px;
-  margin-bottom: 5px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  box-sizing: border-box;
-  gap: 5px;
-}
+        width: 100%;
+        padding: 0px;
+        margin-bottom: 5px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        box-sizing: border-box;
+        gap: 5px;
+      }
 
-.logo-container {
-  width: 60%;
-  display: flex;
-  justify-content: center;
-  margin-bottom: 0px;
-}
+      .logo-container {
+        width: 60%;
+        display: flex;
+        justify-content: center;
+        margin-bottom: 0px;
+      }
 
-.game-logo {
-  max-width: 80%;
-  height: auto;
-  margin: 0 auto;
-}
+      .game-logo {
+        max-width: 80%;
+        height: auto;
+        margin: 0 auto;
+      }
 
-.stats-row {
-  width: 50%;
-  display: flex;
-  justify-content: space-between;
-  gap: 15px;
-}
+      .stats-row {
+        width: 50%;
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+      }
 
-.stat-box {
-  flex: 1;
-  background: rgba(0, 0, 0, 0.6);
-  border-radius: 8px;
-  padding: 0px;
-  text-align: center;
-}
+      .stat-box {
+        flex: 1;
+        background: rgba(0, 0, 0, 0.6);
+        border-radius: 8px;
+        padding: 0px;
+        text-align: center;
+      }
 
-.stat-label {
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: #999;
-  margin-bottom: 0px;
-}
+      .stat-label {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #999;
+        margin-bottom: 0px;
+      }
 
-.stat-value {
-  font-size: 14px;
-  font-weight: bold;
-  color: white;
-}
+      .stat-value {
+        font-size: 14px;
+        font-weight: bold;
+        color: white;
+      }
 
-#preview-display {
-  width: 50%;
-  min-height: 30px;
-  padding: 0px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  box-sizing: border-box;
-  font-size: 12px; /* Smaller font size for all text in preview */
-  color: rgba(255, 255, 255, 0.9);
-  visibility: visible !important; /* Ensure visibility */
-}
+      #preview-display {
+        width: 65%; /* Increased from 50% to accommodate equations */
+        min-height: 30px;
+        padding: 5px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        box-sizing: border-box;
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.9);
+        visibility: visible !important;
+        background-color: rgba(0, 0, 0, 0.3);
+      }
 
-.preview-img {
-  height: 26px;
-  width: 26px;
-  object-fit: contain;
-  vertical-align: middle;
-  border-radius: 5px;
-}
-      
+      .preview-img {
+        height: 26px;
+        width: 26px;
+        object-fit: contain;
+        vertical-align: middle;
+        border-radius: 5px;
+      }
+
       /* We can remove these old styles */
       .score-display,
       .moves-display {
@@ -204,6 +205,44 @@
         animation: pulse 0.5s;
       }
 
+      .music-toggle {
+        position: fixed;
+        top: 55px;
+        right: 15px;
+        width: 36px;
+        height: 36px;
+        background-color: rgba(0, 0, 0, 0.6);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        z-index: 1001; /* Above other elements */
+        transition: background-color 0.2s ease;
+      }
+
+      .music-toggle:hover {
+        background-color: rgba(0, 0, 0, 0.8);
+      }
+
+      .music-toggle svg {
+        width: 20px;
+        height: 20px;
+        fill: white;
+      }
+
+      .music-toggle .music-off-icon {
+        display: none;
+      }
+
+      .music-toggle.music-off .music-icon {
+        display: none;
+      }
+
+      .music-toggle.music-off .music-off-icon {
+        display: block;
+      }
+
       @keyframes pulse {
         0% {
           transform: scale(1);
@@ -220,27 +259,35 @@
   </head>
   <body>
     <div id="splash-screen" class="splash-screen">
-  <img src="https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/Dooplicates-Splash-new-s2c194p6UxyS1Pu9lfZeshwqHtEW92.png" alt="Dooplicates Start Screen" class="splash-image">
-</div>
+      <img
+        src="https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/Dooplicates-Splash-new-s2c194p6UxyS1Pu9lfZeshwqHtEW92.png"
+        alt="Dooplicates Start Screen"
+        class="splash-image"
+      />
+    </div>
     <div class="game-container">
-  <div class="game-header">
-    <div class="logo-container">
-      <img src="https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/dooplicates-logo-white-8bsxymm2CNmvF9d7518d7ohzoyfh9W.png" alt="Dooplicates" class="game-logo">
-    </div>
-    <div class="stats-row">
-      <div class="stat-box score-box">
-        <div class="stat-label">SCORE</div>
-        <div class="stat-value" id="score-value">0</div>
+      <div class="game-header">
+        <div class="logo-container">
+          <img
+            src="https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/dooplicates-logo-white-8bsxymm2CNmvF9d7518d7ohzoyfh9W.png"
+            alt="Dooplicates"
+            class="game-logo"
+          />
+        </div>
+        <div class="stats-row">
+          <div class="stat-box score-box">
+            <div class="stat-label">SCORE</div>
+            <div class="stat-value" id="score-value">0</div>
+          </div>
+          <div class="stat-box moves-box">
+            <div class="stat-label">MOVES</div>
+            <div class="stat-value" id="moves-value">25</div>
+          </div>
+        </div>
+        <div id="preview-display"></div>
       </div>
-      <div class="stat-box moves-box">
-        <div class="stat-label">MOVES</div>
-        <div class="stat-value" id="moves-value">25</div>
-      </div>
+      <div id="game-board"></div>
     </div>
-    <div id="preview-display"></div>
-  </div>
-  <div id="game-board"></div>
-</div>
     <script>
       const rows = 6;
       const cols = 4;
@@ -252,18 +299,18 @@
 
       // Add Farcade SDK event listeners
       if (window.FarcadeSDK) {
-  window.FarcadeSDK.on('play_again', () => {
-    restartGame();
-  });
+        window.FarcadeSDK.on("play_again", () => {
+          restartGame();
+        });
 
-  window.FarcadeSDK.on('toggle_mute', (data) => {
-    console.log("Mute state changed:", data.isMuted);
-    // Update sound manager mute state
-    if (SoundManager.isInitialized) {
-      SoundManager.setMute(data.isMuted);
-    }
-  });
-}
+        window.FarcadeSDK.on("toggle_mute", (data) => {
+          console.log("Mute state changed:", data.isMuted);
+          // Update sound manager mute state
+          if (SoundManager.isInitialized) {
+            SoundManager.setMute(data.isMuted);
+          }
+        });
+      }
 
       let board = Array.from({ length: rows }, () => Array(cols).fill(null));
       let isDragging = false;
@@ -294,207 +341,331 @@
 
       // Image configuration
       const preloadedImages = {
-  2: {
-    src: "https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/doopie%2001-rrQis0SMYhgPEDDTdfd49PrpG9ydQm.png",
-    img: null,
-  },
-  4: {
-    src: "https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/doopie%2006-p8BT3LdevafiK2IeV8jcET1cpvAN5W.png",
-    img: null,
-  },
-  8: {
-    src: "https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/doopie%2005-yfrCmJWS34YqOAJTy9awEcFYwE9dZl.png",
-    img: null,
-  },
-  16: {
-    src: "https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/doopie%2003-TpUBhs6a8xAt96uAmJFNG9TswmvyS0.png",
-    img: null,
-  },
-  32: {
-    src: "https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/doopie%2007-av09W8BO3HVkTmOVHUD88WRHzg5cZ8.png",
-    img: null,
-  },
-  64: {
-    src: "https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/doopie%2002-yrMROul6peKpWfdDU3whhDTkTilpke.png",
-    img: null,
-  },
-  128: {
-    src: "https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/doopie%2004-REUUG9cMXkIp3yOng0bK4oEUXZqN4E.png",
-    img: null,
-  },
-  256: {
-    src: "https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/1735793845894-AngryCoffee-VTcFJq9poQu997zZKEd3kjasMQHT2q.png",
-    img: null,
-  },
-  512: {
-    src: "https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/1735793846569-Coffee-LpuCY26zFqFngC43yOjAtK3Fs8JCsC.png",
-    img: null,
-  },
-  1024: {
-    src: "https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/1735793846563-IceCream-VqhaB84fa9AyT4cMrc8sMNfYYTKYnC.png",
-    img: null,
-  },
-  2048: {
-    src: "https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/1735793846541-Popsicle-1mWavbKDINK4HC8Gr80h1Z73WPXxlT.png",
-    img: null,
-  },
-  4096: {
-    src: "https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/1735793846573-Donkey-RO0SwGPRJAH36SGDBx856lwsYQSDfj.png",
-    img: null,
-  },
-  8192: {
-    src: "https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/1735793846569-Poop-yLRaAiPj1HX4cfgpCtQIJSG2zehVqc.png",
-    img: null,
-  },
-  16384: {
-    src: "https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/1735793899155-Bree_PeaceLove_Sticker1-01-dB0T85oIY3KJfbtE3FhuH0MS8vujJw.png",
-    img: null,
-  }
-};
+        2: {
+          src: "https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/doopie%2001-rrQis0SMYhgPEDDTdfd49PrpG9ydQm.png",
+          img: null,
+        },
+        4: {
+          src: "https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/doopie%2006-p8BT3LdevafiK2IeV8jcET1cpvAN5W.png",
+          img: null,
+        },
+        8: {
+          src: "https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/doopie%2005-yfrCmJWS34YqOAJTy9awEcFYwE9dZl.png",
+          img: null,
+        },
+        16: {
+          src: "https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/doopie%2003-TpUBhs6a8xAt96uAmJFNG9TswmvyS0.png",
+          img: null,
+        },
+        32: {
+          src: "https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/doopie%2007-av09W8BO3HVkTmOVHUD88WRHzg5cZ8.png",
+          img: null,
+        },
+        64: {
+          src: "https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/doopie%2002-yrMROul6peKpWfdDU3whhDTkTilpke.png",
+          img: null,
+        },
+        128: {
+          src: "https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/doopie%2004-REUUG9cMXkIp3yOng0bK4oEUXZqN4E.png",
+          img: null,
+        },
+        256: {
+          src: "https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/1735793845894-AngryCoffee-VTcFJq9poQu997zZKEd3kjasMQHT2q.png",
+          img: null,
+        },
+        512: {
+          src: "https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/1735793846569-Coffee-LpuCY26zFqFngC43yOjAtK3Fs8JCsC.png",
+          img: null,
+        },
+        1024: {
+          src: "https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/1735793846563-IceCream-VqhaB84fa9AyT4cMrc8sMNfYYTKYnC.png",
+          img: null,
+        },
+        2048: {
+          src: "https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/1735793846541-Popsicle-1mWavbKDINK4HC8Gr80h1Z73WPXxlT.png",
+          img: null,
+        },
+        4096: {
+          src: "https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/1735793846573-Donkey-RO0SwGPRJAH36SGDBx856lwsYQSDfj.png",
+          img: null,
+        },
+        8192: {
+          src: "https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/1735793846569-Poop-yLRaAiPj1HX4cfgpCtQIJSG2zehVqc.png",
+          img: null,
+        },
+        16384: {
+          src: "https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/1735793899155-Bree_PeaceLove_Sticker1-01-dB0T85oIY3KJfbtE3FhuH0MS8vujJw.png",
+          img: null,
+        },
+      };
 
-// Sound system
-const SoundManager = {
-  sounds: {
-    bubble: null,
-    merge: null,
-    win: null  // Add the win sound property
-  },
-  audioContext: null,
-  isMuted: false,
-  gainNode: null,
-  isInitialized: false,
-  
-  // Initialize audio on first user interaction
-  init() {
-    if (this.isInitialized) return;
-    
-    try {
-      this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      this.gainNode = this.audioContext.createGain();
-      this.gainNode.connect(this.audioContext.destination);
-      this.loadSounds();
-      this.isInitialized = true;
-      
-      // Apply mute state from Farcade if available
-      if (window.FarcadeSDK && window.FarcadeSDK._isMuted) {
-        this.setMute(true);
-      }
-    } catch (e) {
-      console.error("Web Audio API not supported:", e);
-    }
-  },
-  
-  // Load all sound assets
-  loadSounds() {
-    // Load bubble sound with your provided URL
-    this.loadSound("https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/water-drop-cut-Gh9JOaPkNa3hhf3IwHcWiDK3Tg5rsv.mp3")
-      .then(buffer => this.sounds.bubble = buffer)
-      .catch(e => console.warn("Failed to load bubble sound", e));
-      
-    // Load pop/merge sound with your provided URL
-    this.loadSound("https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/bubble-pop-cut-8nhjPeMO2tjo3gXeY5e1Hr54ySh1ep.mp3")
-      .then(buffer => this.sounds.merge = buffer)
-      .catch(e => console.warn("Failed to load merge sound", e));
+      // Sound system
+      const SoundManager = {
+        sounds: {
+          bubble: null,
+          merge: null,
+          win: null, // Add the win sound property
+        },
+        audioContext: null,
+        isMuted: false,
+        isMusicMuted: false, // Separate state for music
+        gainNode: null,
+        musicGainNode: null, // Separate gain node for music
+        isInitialized: false,
+        backgroundMusic: null,
+        musicSource: null,
 
-      // Load win fanfare sound
-  this.loadSound("https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/fanfare-46385-jGzg7AupAWtjax4hz1mnmpzoSJaobY.mp3")
-    .then(buffer => this.sounds.win = buffer)
-    .catch(e => console.warn("Failed to load win sound", e));
-  },
-  
-  // Fetch and decode a single sound
-  async loadSound(url) {
-    try {
-      const response = await fetch(url);
-      const arrayBuffer = await response.arrayBuffer();
-      return await this.audioContext.decodeAudioData(arrayBuffer);
-    } catch (e) {
-      console.error(`Error loading sound: ${url}`, e);
-      return null;
-    }
-  },
-  
-  // Play bubble sound with pitch based on chain length
-  playBubbleSound(chainLength) {
-    if (!this.isInitialized || this.isMuted || !this.sounds.bubble) return;
-    
-    // Resume audio context if suspended
-    if (this.audioContext.state === 'suspended') {
-      this.audioContext.resume();
-    }
-    
-    const source = this.audioContext.createBufferSource();
-    source.buffer = this.sounds.bubble;
-    
-    // Increase pitch with chain length
-    const basePitch = 0.8;
-    const pitchIncrement = 0.1;
-    source.playbackRate.value = basePitch + (chainLength * pitchIncrement);
-    
-    // Set volume
-    const gainNode = this.audioContext.createGain();
-    gainNode.gain.value = 0.4; // Adjust volume as needed
-    
-    source.connect(gainNode);
-    gainNode.connect(this.gainNode);
-    source.start(0);
-  },
-  
-  // Play merge pop sound
-  playMergeSound(chainLength) {
-    if (!this.isInitialized || this.isMuted || !this.sounds.merge) return;
-    
-    // Resume audio context if suspended
-    if (this.audioContext.state === 'suspended') {
-      this.audioContext.resume();
-    }
-    
-    const source = this.audioContext.createBufferSource();
-    source.buffer = this.sounds.merge;
-    
-    // Adjust based on chain length
-    const volume = Math.min(0.3 + (chainLength * 0.05), 0.9);
-    const pitch = Math.min(1 + (chainLength * 0.05), 1.5);
-    
-    source.playbackRate.value = pitch;
-    
-    const gainNode = this.audioContext.createGain();
-    gainNode.gain.value = volume;
-    
-    source.connect(gainNode);
-    gainNode.connect(this.gainNode);
-    source.start(0);
-  },
+        // Initialize audio on first user interaction
+        init() {
+          if (this.isInitialized) return;
 
-  // Play the win fanfare sound
-playWinSound() {
-  if (!this.isInitialized || this.isMuted || !this.sounds.win) return;
-  
-  // Resume audio context if suspended
-  if (this.audioContext.state === 'suspended') {
-    this.audioContext.resume();
-  }
-  
-  const source = this.audioContext.createBufferSource();
-  source.buffer = this.sounds.win;
-  
-  // Set volume
-  const gainNode = this.audioContext.createGain();
-  gainNode.gain.value = 0.7; // Good volume for fanfare
-  
-  source.connect(gainNode);
-  gainNode.connect(this.gainNode);
-  source.start(0);
-},
-  
-  // Set mute state
-  setMute(isMuted) {
-    this.isMuted = isMuted;
-    if (this.gainNode) {
-      this.gainNode.gain.value = isMuted ? 0 : 1;
-    }
-  }
-};
+          try {
+            // If the audio context and background music are already initialized via preloading
+            // just complete the initialization without reloading music
+            if (!this.audioContext) {
+              this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+              this.gainNode = this.audioContext.createGain();
+              this.gainNode.connect(this.audioContext.destination);
+
+              // Create separate gain node for music
+              this.musicGainNode = this.audioContext.createGain();
+              this.musicGainNode.connect(this.audioContext.destination);
+            }
+
+            this.loadSounds();
+
+            // Only load background music if it's not already loaded
+            if (!this._musicPreloaded) {
+              this.loadBackgroundMusic();
+            }
+
+            this.isInitialized = true;
+
+            // Apply mute state from Farcade if available
+            if (window.FarcadeSDK && window.FarcadeSDK._isMuted) {
+              this.setMute(true);
+            }
+          } catch (e) {
+            console.error("Web Audio API not supported:", e);
+          }
+        },
+
+        // Load background music
+        loadBackgroundMusic() {
+          this.loadSound(
+            "https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/Good%20Mornin-UbgtRp0eCSEMgUKgSy6RVO2ANAE9A0.mp3",
+          )
+            .then((buffer) => {
+              this.backgroundMusic = buffer;
+              // Start playing after load if not muted
+              if (!this.isMuted && !this.isMusicMuted) {
+                this.playBackgroundMusic();
+              }
+            })
+            .catch((e) => console.warn("Failed to load background music", e));
+        },
+
+        // Play background music with looping
+        playBackgroundMusic() {
+          if (!this.isInitialized || this.isMuted || this.isMusicMuted || !this.backgroundMusic || this.musicSource)
+            return;
+
+          // Resume audio context if suspended
+          if (this.audioContext.state === "suspended") {
+            this.audioContext.resume();
+          }
+
+          // Create and configure the source
+          this.musicSource = this.audioContext.createBufferSource();
+          this.musicSource.buffer = this.backgroundMusic;
+
+          // Set up looping
+          this.musicSource.loop = true;
+
+          // Connect to the music gain node
+          this.musicSource.connect(this.musicGainNode);
+          this.musicGainNode.gain.value = 0.3; // Lower volume for background music
+
+          // Start the music
+          this.musicSource.start(0);
+        },
+
+        pauseBackgroundMusic(keepSource = false) {
+          if (this.musicSource && !keepSource) {
+            this.musicSource.stop();
+            this.musicSource = null;
+          } else if (this.musicSource && this.musicGainNode) {
+            // Just mute it if we're keeping the source
+            this.musicGainNode.gain.value = 0;
+          }
+        },
+
+        // Toggle music specifically
+        toggleMusic() {
+          this.isMusicMuted = !this.isMusicMuted;
+
+          if (this.isMusicMuted) {
+            // Instead of stopping the music, just mute it by setting gain to 0
+            if (this.musicGainNode) {
+              this.musicGainNode.gain.value = 0;
+            }
+          } else if (!this.isMuted) {
+            // If unmuting, either set gain back to normal or start if not playing
+            if (this.musicSource && this.musicGainNode) {
+              // Music is already playing, just unmute it
+              this.musicGainNode.gain.value = 0.3;
+            } else {
+              // No music source, need to start playing
+              this.playBackgroundMusic();
+            }
+          }
+
+          // Update the music button state
+          this.updateMusicButtonState();
+
+          return this.isMusicMuted;
+        },
+
+        updateMusicButtonState() {
+          const musicButton = document.getElementById("music-toggle-button");
+          if (!musicButton) return;
+
+          if (this.isMusicMuted) {
+            musicButton.classList.add("music-off");
+          } else {
+            musicButton.classList.remove("music-off");
+          }
+        },
+
+        // Load all sound assets
+        loadSounds() {
+          // Load bubble sound with your provided URL
+          this.loadSound(
+            "https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/water-drop-cut-Gh9JOaPkNa3hhf3IwHcWiDK3Tg5rsv.mp3",
+          )
+            .then((buffer) => (this.sounds.bubble = buffer))
+            .catch((e) => console.warn("Failed to load bubble sound", e));
+
+          // Load pop/merge sound with your provided URL
+          this.loadSound(
+            "https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/bubble-pop-cut-8nhjPeMO2tjo3gXeY5e1Hr54ySh1ep.mp3",
+          )
+            .then((buffer) => (this.sounds.merge = buffer))
+            .catch((e) => console.warn("Failed to load merge sound", e));
+
+          // Load win fanfare sound
+          this.loadSound(
+            "https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/fanfare-46385-jGzg7AupAWtjax4hz1mnmpzoSJaobY.mp3",
+          )
+            .then((buffer) => (this.sounds.win = buffer))
+            .catch((e) => console.warn("Failed to load win sound", e));
+        },
+
+        // Fetch and decode a single sound
+        async loadSound(url) {
+          try {
+            const response = await fetch(url);
+            const arrayBuffer = await response.arrayBuffer();
+            return await this.audioContext.decodeAudioData(arrayBuffer);
+          } catch (e) {
+            console.error(`Error loading sound: ${url}`, e);
+            return null;
+          }
+        },
+
+        // Play bubble sound with pitch based on chain length
+        playBubbleSound(chainLength) {
+          if (!this.isInitialized || this.isMuted || !this.sounds.bubble) return;
+
+          // Resume audio context if suspended
+          if (this.audioContext.state === "suspended") {
+            this.audioContext.resume();
+          }
+
+          const source = this.audioContext.createBufferSource();
+          source.buffer = this.sounds.bubble;
+
+          // Increase pitch with chain length
+          const basePitch = 0.8;
+          const pitchIncrement = 0.1;
+          source.playbackRate.value = basePitch + chainLength * pitchIncrement;
+
+          // Set volume
+          const gainNode = this.audioContext.createGain();
+          gainNode.gain.value = 0.4; // Adjust volume as needed
+
+          source.connect(gainNode);
+          gainNode.connect(this.gainNode);
+          source.start(0);
+        },
+
+        // Play merge pop sound
+        playMergeSound(chainLength) {
+          if (!this.isInitialized || this.isMuted || !this.sounds.merge) return;
+
+          // Resume audio context if suspended
+          if (this.audioContext.state === "suspended") {
+            this.audioContext.resume();
+          }
+
+          const source = this.audioContext.createBufferSource();
+          source.buffer = this.sounds.merge;
+
+          // Adjust based on chain length
+          const volume = Math.min(0.3 + chainLength * 0.05, 0.9);
+          const pitch = Math.min(1 + chainLength * 0.05, 1.5);
+
+          source.playbackRate.value = pitch;
+
+          const gainNode = this.audioContext.createGain();
+          gainNode.gain.value = volume;
+
+          source.connect(gainNode);
+          gainNode.connect(this.gainNode);
+          source.start(0);
+        },
+
+        // Play the win fanfare sound
+        playWinSound() {
+          if (!this.isInitialized || this.isMuted || !this.sounds.win) return;
+
+          // Resume audio context if suspended
+          if (this.audioContext.state === "suspended") {
+            this.audioContext.resume();
+          }
+
+          const source = this.audioContext.createBufferSource();
+          source.buffer = this.sounds.win;
+
+          // Set volume
+          const gainNode = this.audioContext.createGain();
+          gainNode.gain.value = 0.7; // Good volume for fanfare
+
+          source.connect(gainNode);
+          gainNode.connect(this.gainNode);
+          source.start(0);
+        },
+
+        // Set mute state
+        setMute(isMuted) {
+          this.isMuted = isMuted;
+          if (this.gainNode) {
+            this.gainNode.gain.value = isMuted ? 0 : 1;
+          }
+
+          // Handle background music based on mute state
+          if (isMuted) {
+            // When using Farcade mute (global mute), actually stop the music
+            this.pauseBackgroundMusic(false);
+          } else if (!this.isMusicMuted) {
+            // Only restart music if music specifically isn't muted
+            this.playBackgroundMusic();
+          }
+
+          // Update the music button to reflect current state
+          this.updateMusicButtonState();
+        },
+      };
 
       const imageValues = Object.keys(preloadedImages).map(Number); // e.g., [2, 4]
 
@@ -549,47 +720,47 @@ playWinSound() {
       }
 
       function initGameLogic() {
-  // Renamed from init to be called after preloading
-  calculateTileSize();
-  board = Array.from({ length: rows }, () => Array(cols).fill(null));
+        // Renamed from init to be called after preloading
+        calculateTileSize();
+        board = Array.from({ length: rows }, () => Array(cols).fill(null));
 
-  // Generate 2-3 positions for value 8 tiles that are far apart
-  const eightPositions = [];
-  const numEights = Math.floor(Math.random() * 2) + 2; // 2-3 eights
-  
-  // Place 8s first to ensure they're distributed well
-  while (eightPositions.length < numEights) {
-    const r = Math.floor(Math.random() * rows);
-    const c = Math.floor(Math.random() * cols);
-    
-    // Check if this position is far enough from existing 8s
-    let isFarEnough = true;
-    for (const pos of eightPositions) {
-      // Manhattan distance - ensure at least 3 cells apart
-      const distance = Math.abs(pos.row - r) + Math.abs(pos.col - c);
-      if (distance < 3) {
-        isFarEnough = false;
-        break;
-      }
-    }
-    
-    if (isFarEnough) {
-      eightPositions.push({ row: r, col: c });
-    }
-  }
+        // Generate 2-3 positions for value 8 tiles that are far apart
+        const eightPositions = [];
+        const numEights = Math.floor(Math.random() * 2) + 2; // 2-3 eights
+
+        // Place 8s first to ensure they're distributed well
+        while (eightPositions.length < numEights) {
+          const r = Math.floor(Math.random() * rows);
+          const c = Math.floor(Math.random() * cols);
+
+          // Check if this position is far enough from existing 8s
+          let isFarEnough = true;
+          for (const pos of eightPositions) {
+            // Manhattan distance - ensure at least 3 cells apart
+            const distance = Math.abs(pos.row - r) + Math.abs(pos.col - c);
+            if (distance < 3) {
+              isFarEnough = false;
+              break;
+            }
+          }
+
+          if (isFarEnough) {
+            eightPositions.push({ row: r, col: c });
+          }
+        }
 
         const initialCells = [];
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      // Is this one of our designated 8 positions?
-      const isEightPosition = eightPositions.some(pos => pos.row === r && pos.col === c);
-      
-      // Assign value: 8 for special positions, otherwise 2 or 4
-      const val = isEightPosition ? 8 : (Math.random() < 0.6 ? 2 : 4);
-      board[r][c] = val;
-      initialCells.push({ row: r, col: c, value: val });
-    }
-  }
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            // Is this one of our designated 8 positions?
+            const isEightPosition = eightPositions.some((pos) => pos.row === r && pos.col === c);
+
+            // Assign value: 8 for special positions, otherwise 2 or 4
+            const val = isEightPosition ? 8 : Math.random() < 0.6 ? 2 : 4;
+            board[r][c] = val;
+            initialCells.push({ row: r, col: c, value: val });
+          }
+        }
 
         gameBoard.innerHTML = "";
         cellElements.clear();
@@ -619,16 +790,16 @@ playWinSound() {
       }
 
       // Update this function (though it's not used directly)
-function getRandomTileValue() {
-  const values = [2, 4, 8];
-  return values[Math.floor(Math.random() * values.length)];
-}
+      function getRandomTileValue() {
+        const values = [2, 4, 8];
+        return values[Math.floor(Math.random() * values.length)];
+      }
 
       // New function specifically for initial board generation
-function getInitialBoardTileValue() {
-  // For refills during gameplay, use mostly lower values
-  return Math.random() < 0.7 ? 2 : 4;
-}
+      function getInitialBoardTileValue() {
+        // For refills during gameplay, use mostly lower values
+        return Math.random() < 0.7 ? 2 : 4;
+      }
 
       function getTileColor(value) {
         if (!value) return "#444";
@@ -637,7 +808,7 @@ function getInitialBoardTileValue() {
           return "transparent"; // Or a very subtle common background
         } */
         const colorMap = {
-          2: "#74ABFE", 
+          2: "#74ABFE",
           4: "#5E90FF",
           8: "#A1E9FF",
           16: "#69DCFF",
@@ -660,21 +831,21 @@ function getInitialBoardTileValue() {
       }
 
       function positionForCell(r, c) {
-  // Calculate the total width and height of the grid
-  const gridWidth = cols * TILE_SIZE + (cols - 1) * TILE_GAP;
-  const gridHeight = rows * TILE_SIZE + (rows - 1) * TILE_GAP;
-  
-  // Calculate the offset to center the grid in the game board
-  const boardRect = gameBoard.getBoundingClientRect();
-  const offsetLeft = Math.max(0, (boardRect.width - gridWidth) / 2);
-  const offsetTop = Math.max(0, (boardRect.height - gridHeight) / 2);
-  
-  // Calculate position with offset
-  const top = offsetTop + r * (TILE_SIZE + TILE_GAP);
-  const left = offsetLeft + c * (TILE_SIZE + TILE_GAP);
-  
-  return { top, left };
-}
+        // Calculate the total width and height of the grid
+        const gridWidth = cols * TILE_SIZE + (cols - 1) * TILE_GAP;
+        const gridHeight = rows * TILE_SIZE + (rows - 1) * TILE_GAP;
+
+        // Calculate the offset to center the grid in the game board
+        const boardRect = gameBoard.getBoundingClientRect();
+        const offsetLeft = Math.max(0, (boardRect.width - gridWidth) / 2);
+        const offsetTop = Math.max(0, (boardRect.height - gridHeight) / 2);
+
+        // Calculate position with offset
+        const top = offsetTop + r * (TILE_SIZE + TILE_GAP);
+        const left = offsetLeft + c * (TILE_SIZE + TILE_GAP);
+
+        return { top, left };
+      }
 
       function updateCellElementContent(cellEl, value) {
         const newValueStr = String(value);
@@ -755,7 +926,7 @@ function getInitialBoardTileValue() {
       function renderBoard(isInitialLayout = false, droppedCells = [], newlyAddedCells = [], mergeTargetKey = null) {
         scoreDisplay.textContent = score;
         movesDisplay.textContent = movesLeft;
-        
+
         const processedDomKeys = new Set();
 
         if (isInitialLayout) {
@@ -976,241 +1147,256 @@ function getInitialBoardTileValue() {
       }
 
       // Make sure refillBoard uses the updated probability distribution
-function refillBoard() {
-  const newlyAddedCells = [];
-  for (let c = 0; c < cols; c++) {
-    for (let r = 0; r < rows; r++) {
-      if (board[r][c] === null) {
-        // For refills, use mostly 2s and 4s (90% chance)
-        let newValue;
-        const rand = Math.random();
-        if (rand < 0.6) {
-          newValue = 2;
-        } else if (rand < 0.9) {
-          newValue = 4;
-        } else {
-          newValue = 8; // Only 10% chance for 8s
+      function refillBoard() {
+        const newlyAddedCells = [];
+        for (let c = 0; c < cols; c++) {
+          for (let r = 0; r < rows; r++) {
+            if (board[r][c] === null) {
+              // For refills, use mostly 2s and 4s (90% chance)
+              let newValue;
+              const rand = Math.random();
+              if (rand < 0.6) {
+                newValue = 2;
+              } else if (rand < 0.9) {
+                newValue = 4;
+              } else {
+                newValue = 8; // Only 10% chance for 8s
+              }
+
+              board[r][c] = newValue;
+              newlyAddedCells.push({ row: r, col: c, value: newValue });
+            }
+          }
         }
-        
-        board[r][c] = newValue;
-        newlyAddedCells.push({ row: r, col: c, value: newValue });
+        return newlyAddedCells;
       }
-    }
-  }
-  return newlyAddedCells;
-}
 
       function processChain(chain) {
-  if (chain.length < 2) return;
-  
-  let { row: startRow, col: startCol } = chain[0];
-  let baseValue = board[startRow][startCol];
-  
-  // Verification logic
-  for (let i = 1; i < chain.length; i++) {
-    const { row, col } = chain[i];
-    if (board[row][col] !== baseValue) {
-      console.error("Invalid chain: non-identical values detected");
-      return;
-    }
-  }
+        if (chain.length < 2) return;
 
-  // Count how many tiles of this value exist on the board
-  const totalOfThisValue = countTilesOfValue(baseValue);
-  const clearedAllOfValue = chain.length === totalOfThisValue;
-  
-  // Play merge sound
-  if (SoundManager.isInitialized) {
-    SoundManager.playMergeSound(chain.length);
-  }
-  
-  // Add haptic feedback when merging tiles
-  if (window.FarcadeSDK) {
-    window.FarcadeSDK.singlePlayer.actions.hapticFeedback();
-  }
-  
-  // Final value and scoring remain the same
-  let finalValue = baseValue * 2;
-  score += baseValue * chain.length;
-  
-  // Check for "cleared all of this value" bonus
-  if (clearedAllOfValue && chain.length >= 3) {
-    movesLeft += 5; // Add 5 bonus moves
-    showMoveBonus(0, false, true, baseValue); // Pass special flag for value clear
-  }
-  // Mini-rewards for new character achievements (16, 32, 64)
-  else if ((finalValue === 16 || finalValue === 32 || finalValue === 64) && !achievedValues.has(finalValue)) {
-    achievedValues.add(finalValue);
-    movesLeft += 5; // Add 5 bonus moves
-    showMoveBonus(finalValue); // Pass the value to customize the message
-  }
-  // Major milestone rewards (128, 256, 512, 1024, 2048, 4096)
-  else if ((finalValue === 128 || finalValue === 256 || finalValue === 512 || finalValue === 1024 || finalValue === 2048 || finalValue === 4096) && finalValue > highestValue) {
-  movesLeft += 25; // Add 25 bonus moves 
-  showMoveBonus(finalValue); // Pass the value to customize the message
-}
-// Special win condition for 8192
-else if (finalValue === 8192 && finalValue > highestValue) {
-  // Show the win screen instead of continuing the game
-  showWinNotification();
-  // Don't increment moves as the game is ending
-}
-  
-  animateChainMerge(chain, finalValue);
-  if (finalValue > highestValue) highestValue = finalValue;
-  
-  // Track that this value has been achieved
-  achievedValues.add(finalValue);
-}
+        let { row: startRow, col: startCol } = chain[0];
+        let baseValue = board[startRow][startCol];
 
-// Helper function to count tiles of a specific value on the board
-function countTilesOfValue(value) {
-  let count = 0;
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      if (board[r][c] === value) {
-        count++;
+        // Verification logic
+        for (let i = 1; i < chain.length; i++) {
+          const { row, col } = chain[i];
+          if (board[row][col] !== baseValue) {
+            console.error("Invalid chain: non-identical values detected");
+            return;
+          }
+        }
+
+        // Count how many tiles of this value exist on the board
+        const totalOfThisValue = countTilesOfValue(baseValue);
+        const clearedAllOfValue = chain.length === totalOfThisValue;
+
+        // Play merge sound
+        if (SoundManager.isInitialized) {
+          SoundManager.playMergeSound(chain.length);
+        }
+
+        // Add haptic feedback when merging tiles
+        if (window.FarcadeSDK) {
+          window.FarcadeSDK.singlePlayer.actions.hapticFeedback();
+        }
+
+        // Final value and scoring remain the same
+        let finalValue = baseValue * 2;
+        score += baseValue * chain.length;
+
+        // Update the highest value the player has created
+        if (finalValue > highestValue) {
+          highestValue = finalValue;
+        }
+
+        // Check for "cleared all of this value" bonus
+        if (clearedAllOfValue && chain.length >= 3) {
+          movesLeft += 5; // Add 5 bonus moves
+          showMoveBonus(0, false, true, baseValue); // Pass special flag for value clear
+        }
+        // Mini-rewards for new character achievements (16, 32, 64)
+        else if ((finalValue === 16 || finalValue === 32 || finalValue === 64) && !achievedValues.has(finalValue)) {
+          achievedValues.add(finalValue);
+          movesLeft += 5; // Add 5 bonus moves
+          showMoveBonus(finalValue); // Pass the value to customize the message
+        }
+        // Major milestone rewards (128, 256, 512, 1024, 2048, 4096)
+        else if (
+          (finalValue === 128 ||
+            finalValue === 256 ||
+            finalValue === 512 ||
+            finalValue === 1024 ||
+            finalValue === 2048 ||
+            finalValue === 4096) &&
+          finalValue > highestValue
+        ) {
+          movesLeft += 25; // Add 25 bonus moves
+          showMoveBonus(finalValue); // Pass the value to customize the message
+        }
+        // Special win condition for 8192
+        else if (finalValue === 8192 && finalValue > highestValue) {
+          // Show the win screen instead of continuing the game
+          showWinNotification();
+          // Don't increment moves as the game is ending
+        }
+
+        animateChainMerge(chain, finalValue);
+        if (finalValue > highestValue) highestValue = finalValue;
+
+        // Track that this value has been achieved
+        achievedValues.add(finalValue);
       }
-    }
-  }
-  return count;
-}
 
-// Update the showMoveBonus function to handle the value clear bonus
-function showMoveBonus(value, isBoardClear = false, isValueClear = false, clearedValue = null) {
-  const movesBox = document.querySelector('.moves-box');
-  movesBox.classList.add('bonus-highlight');
-  
-  // Create a floating notification with milestone-specific text
-  const notification = document.createElement('div');
-  notification.className = 'bonus-notification';
-  notification.style.textAlign = 'center'; // Center all text in notification
-  
-  // Choose background color based on the milestone value
-  let backgroundColor;
-  let textColor = '#fff'; // Default white text
-  
-  if (isValueClear && clearedValue !== null) {
-    // For value-clear, use flex-direction: column to stack content vertically
-    notification.style.display = 'flex';
-    notification.style.flexDirection = 'column';
-    notification.style.alignItems = 'center';
-    notification.style.gap = '5px';
-    
-    // Create first line container (ALL [image] CLEARED!)
-    const firstLine = document.createElement('div');
-    firstLine.style.display = 'flex';
-    firstLine.style.alignItems = 'center';
-    firstLine.style.justifyContent = 'center';
-    firstLine.style.gap = '5px';
-    
-    // Create first part of the text
-    const textPart1 = document.createElement('span');
-    textPart1.textContent = 'ALL ';
-    firstLine.appendChild(textPart1);
-    
-    // Create and append the image
-    const tileImg = document.createElement('img');
-    tileImg.src = getPreloadedImageSrc(clearedValue);
-    tileImg.alt = clearedValue.toString();
-    tileImg.className = 'preview-img';
-    firstLine.appendChild(tileImg);
-    
-    // Create second part of the text
-    const textPart2 = document.createElement('span');
-    textPart2.textContent = ' CLEARED!';
-    firstLine.appendChild(textPart2);
-    
-    // Add the second line with the +5 MOVES text
-    const secondLine = document.createElement('div');
-    secondLine.textContent = '+5 MOVES!';
-    secondLine.style.marginTop = '2px'; // Small gap between lines
-    
-    // Add both lines to notification
-    notification.appendChild(firstLine);
-    notification.appendChild(secondLine);
-    
-    backgroundColor = getTileColor(clearedValue);
-  } else if (value === 16 || value === 32 || value === 64) {
-    notification.textContent = 'NEW CHARACTER! +5 MOVES!';
-    notification.style.display = 'flex';
-    notification.style.alignItems = 'center';
-    notification.style.justifyContent = 'center';
-    backgroundColor = getTileColor(value);
-  } else if (value === 128) {
-    notification.textContent = 'NICE! +25 MOVES!';
-    notification.style.display = 'flex';
-    notification.style.alignItems = 'center';
-    notification.style.justifyContent = 'center';
-    backgroundColor = getTileColor(value);
-  } else if (value === 256) {
-    notification.textContent = 'AWESOME! +25 MOVES!';
-    notification.style.display = 'flex';
-    notification.style.alignItems = 'center';
-    notification.style.justifyContent = 'center';
-    backgroundColor = getTileColor(value);
-  } else if (value === 512) {
-    notification.textContent = 'MILESTONE! +25 MOVES!';
-    notification.style.display = 'flex';
-    notification.style.alignItems = 'center';
-    notification.style.justifyContent = 'center';
-    backgroundColor = getTileColor(value);
-  } else if (value === 4096) {
-    notification.textContent = 'AMAZING! +25 MOVES!';
-    notification.style.display = 'flex';
-    notification.style.alignItems = 'center';
-    notification.style.justifyContent = 'center';
-    backgroundColor = getTileColor(value);
-  } else if (value === 1024) {
-    notification.textContent = 'INCREDIBLE! +25 MOVES!';
-    notification.style.display = 'flex';
-    notification.style.alignItems = 'center';
-    notification.style.justifyContent = 'center';
-    backgroundColor = getTileColor(value);
-  } else if (value === 2048) {
-    notification.textContent = 'LEGENDARY! +25 MOVES!';
-    notification.style.display = 'flex';
-    notification.style.alignItems = 'center';
-    notification.style.justifyContent = 'center';
-    backgroundColor = getTileColor(value);
-  }else {
-    notification.textContent = '+25 MOVES!';
-    notification.style.display = 'flex';
-    notification.style.alignItems = 'center';
-    notification.style.justifyContent = 'center';
-    backgroundColor = getTileColor(2048); // Default to a celebratory color
-  }
+      // Helper function to count tiles of a specific value on the board
+      function countTilesOfValue(value) {
+        let count = 0;
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            if (board[r][c] === value) {
+              count++;
+            }
+          }
+        }
+        return count;
+      }
 
-  // Make text white for darker background colors
-  if (backgroundColor.includes('#5E90FF') || 
-      backgroundColor.includes('#69DCFF') || 
-      backgroundColor.includes('#A4A4F4') ||
-      backgroundColor.includes('#FF7BD7')) {
-    textColor = '#fff';
-  }
+      // Update the showMoveBonus function to handle the value clear bonus
+      function showMoveBonus(value, isBoardClear = false, isValueClear = false, clearedValue = null) {
+        const movesBox = document.querySelector(".moves-box");
+        movesBox.classList.add("bonus-highlight");
 
-  // UPDATE: After reaching a milestone, show the next milestone target
-  updateMilestonePreview();
-  
-  notification.style.position = 'absolute';
-  notification.style.top = '50%';
-  notification.style.left = '50%';
-  notification.style.transform = 'translate(-50%, -50%)';
-  notification.style.background = backgroundColor;
-  notification.style.color = textColor;
-  notification.style.padding = '10px 20px';
-  notification.style.borderRadius = '8px';
-  notification.style.fontWeight = 'bold';
-  notification.style.zIndex = '100';
-  notification.style.animation = 'fadeInOut 1.5s forwards';
-  notification.style.minWidth = '180px'; // Minimum width for better appearance
-  gameBoard.appendChild(notification);
-  
-  // Add CSS animation if not already present
-  if (!document.getElementById('bonus-animation-styles')) {
-  const style = document.createElement('style');
-  style.id = 'bonus-animation-styles';
-  style.textContent = `
+        // Create a floating notification with milestone-specific text
+        const notification = document.createElement("div");
+        notification.className = "bonus-notification";
+        notification.style.textAlign = "center"; // Center all text in notification
+
+        // Choose background color based on the milestone value
+        let backgroundColor;
+        let textColor = "#fff"; // Default white text
+
+        if (isValueClear && clearedValue !== null) {
+          // For value-clear, use flex-direction: column to stack content vertically
+          notification.style.display = "flex";
+          notification.style.flexDirection = "column";
+          notification.style.alignItems = "center";
+          notification.style.gap = "5px";
+
+          // Create first line container (ALL [image] CLEARED!)
+          const firstLine = document.createElement("div");
+          firstLine.style.display = "flex";
+          firstLine.style.alignItems = "center";
+          firstLine.style.justifyContent = "center";
+          firstLine.style.gap = "5px";
+
+          // Create first part of the text
+          const textPart1 = document.createElement("span");
+          textPart1.textContent = "ALL ";
+          firstLine.appendChild(textPart1);
+
+          // Create and append the image
+          const tileImg = document.createElement("img");
+          tileImg.src = getPreloadedImageSrc(clearedValue);
+          tileImg.alt = clearedValue.toString();
+          tileImg.className = "preview-img";
+          firstLine.appendChild(tileImg);
+
+          // Create second part of the text
+          const textPart2 = document.createElement("span");
+          textPart2.textContent = " CLEARED!";
+          firstLine.appendChild(textPart2);
+
+          // Add the second line with the +5 MOVES text
+          const secondLine = document.createElement("div");
+          secondLine.textContent = "+5 MOVES!";
+          secondLine.style.marginTop = "2px"; // Small gap between lines
+
+          // Add both lines to notification
+          notification.appendChild(firstLine);
+          notification.appendChild(secondLine);
+
+          backgroundColor = getTileColor(clearedValue);
+        } else if (value === 16 || value === 32 || value === 64) {
+          notification.textContent = "NEW CHARACTER! +5 MOVES!";
+          notification.style.display = "flex";
+          notification.style.alignItems = "center";
+          notification.style.justifyContent = "center";
+          backgroundColor = getTileColor(value);
+        } else if (value === 128) {
+          notification.textContent = "NICE! +25 MOVES!";
+          notification.style.display = "flex";
+          notification.style.alignItems = "center";
+          notification.style.justifyContent = "center";
+          backgroundColor = getTileColor(value);
+        } else if (value === 256) {
+          notification.textContent = "AWESOME! +25 MOVES!";
+          notification.style.display = "flex";
+          notification.style.alignItems = "center";
+          notification.style.justifyContent = "center";
+          backgroundColor = getTileColor(value);
+        } else if (value === 512) {
+          notification.textContent = "MILESTONE! +25 MOVES!";
+          notification.style.display = "flex";
+          notification.style.alignItems = "center";
+          notification.style.justifyContent = "center";
+          backgroundColor = getTileColor(value);
+        } else if (value === 4096) {
+          notification.textContent = "AMAZING! +25 MOVES!";
+          notification.style.display = "flex";
+          notification.style.alignItems = "center";
+          notification.style.justifyContent = "center";
+          backgroundColor = getTileColor(value);
+        } else if (value === 1024) {
+          notification.textContent = "INCREDIBLE! +25 MOVES!";
+          notification.style.display = "flex";
+          notification.style.alignItems = "center";
+          notification.style.justifyContent = "center";
+          backgroundColor = getTileColor(value);
+        } else if (value === 2048) {
+          notification.textContent = "LEGENDARY! +25 MOVES!";
+          notification.style.display = "flex";
+          notification.style.alignItems = "center";
+          notification.style.justifyContent = "center";
+          backgroundColor = getTileColor(value);
+        } else {
+          notification.textContent = "+25 MOVES!";
+          notification.style.display = "flex";
+          notification.style.alignItems = "center";
+          notification.style.justifyContent = "center";
+          backgroundColor = getTileColor(2048); // Default to a celebratory color
+        }
+
+        // Make text white for darker background colors
+        if (
+          backgroundColor.includes("#5E90FF") ||
+          backgroundColor.includes("#69DCFF") ||
+          backgroundColor.includes("#A4A4F4") ||
+          backgroundColor.includes("#FF7BD7")
+        ) {
+          textColor = "#fff";
+        }
+
+        // UPDATE: After reaching a milestone, show the next milestone target
+        updateMilestonePreview();
+
+        notification.style.position = "absolute";
+        notification.style.top = "50%";
+        notification.style.left = "50%";
+        notification.style.transform = "translate(-50%, -50%)";
+        notification.style.background = backgroundColor;
+        notification.style.color = textColor;
+        notification.style.padding = "10px 20px";
+        notification.style.borderRadius = "8px";
+        notification.style.fontWeight = "bold";
+        notification.style.zIndex = "100";
+        notification.style.animation = "fadeInOut 1.5s forwards";
+        notification.style.minWidth = "180px"; // Minimum width for better appearance
+        gameBoard.appendChild(notification);
+
+        // Add CSS animation if not already present
+        if (!document.getElementById("bonus-animation-styles")) {
+          const style = document.createElement("style");
+          style.id = "bonus-animation-styles";
+          style.textContent = `
     @keyframes fadeInOut {
       0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
       20% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
@@ -1234,127 +1420,127 @@ function showMoveBonus(value, isBoardClear = false, isValueClear = false, cleare
       100% { background: rgba(0, 0, 0, 0.6); }
     }
   `;
-  document.head.appendChild(style);
-}
-  
-  // Remove the notification after animation completes
-  setTimeout(() => {
-    notification.remove();
-    movesBox.classList.remove('bonus-highlight');
-  }, 1500);
-}
+          document.head.appendChild(style);
+        }
 
-function showWinNotification() {
-  // Set game as inactive to prevent further moves
-  gameActive = false;
-  
-  // Create the overlay container
-  const overlay = document.createElement('div');
-  overlay.className = 'win-overlay';
-  overlay.style.position = 'fixed';
-  overlay.style.top = '0';
-  overlay.style.left = '0';
-  overlay.style.width = '100%';
-  overlay.style.height = '100%';
-  overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.85)';
-  overlay.style.zIndex = '1000';
-  overlay.style.display = 'flex';
-  overlay.style.flexDirection = 'column';
-  overlay.style.justifyContent = 'center';
-  overlay.style.alignItems = 'center';
-  overlay.style.animation = 'fadeIn 0.5s ease-in';
-  
-  // Add the YOU WIN! text
-  const winText = document.createElement('div');
-  winText.textContent = 'YOU WIN!';
-  winText.style.color = '#FFFFFF';
-  winText.style.fontSize = '36px';
-  winText.style.fontWeight = 'bold';
-  winText.style.marginBottom = '20px';
-  winText.style.animation = 'scaleIn 0.8s ease-out';
-  overlay.appendChild(winText);
-  
-  // Create container for the image and glow
-  const imageContainer = document.createElement('div');
-  imageContainer.className = 'image-container';
-  imageContainer.style.position = 'relative';
-  imageContainer.style.marginBottom = '30px';
-  imageContainer.style.width = '150px';
-  imageContainer.style.height = '150px';
-  imageContainer.style.display = 'flex';
-  imageContainer.style.justifyContent = 'center';
-  imageContainer.style.alignItems = 'center';
-  
-  // Create circular glow background element
-  const glowCircle = document.createElement('div');
-  glowCircle.className = 'glow-circle';
-  glowCircle.style.position = 'absolute';
-  glowCircle.style.width = '130px';
-  glowCircle.style.height = '130px';
-  glowCircle.style.borderRadius = '50%';
-  glowCircle.style.background = '#FFE780';
-  glowCircle.style.filter = 'blur(15px)';
-  glowCircle.style.opacity = '0.7';
-  glowCircle.style.animation = 'spin 12s linear infinite';
-  imageContainer.appendChild(glowCircle);
-  
-  // Add the 8192 image on top
-  const image = document.createElement('img');
-  image.src = getPreloadedImageSrc(8192);
-  image.alt = '8192';
-  image.style.width = '120px';
-  image.style.height = '120px';
-  image.style.position = 'relative';
-  image.style.animation = 'pulse 2s infinite';
-  imageContainer.appendChild(image);
-  
-  overlay.appendChild(imageContainer);
-  
-  // Add the SUBMIT SCORE button
-  const submitButton = document.createElement('button');
-  submitButton.textContent = 'SUBMIT SCORE';
-  submitButton.style.backgroundColor = '#ff7bd7';
-  submitButton.style.border = 'none';
-  submitButton.style.borderRadius = '50px';
-  submitButton.style.padding = '15px 30px';
-  submitButton.style.fontSize = '18px';
-  submitButton.style.fontWeight = 'bold';
-  submitButton.style.color = '#FFFFFF';
-  submitButton.style.cursor = 'pointer';
-  submitButton.style.marginTop = '20px';
-  submitButton.style.animation = 'scaleIn 0.8s ease-out 0.3s both';
-  submitButton.style.boxShadow = '0 0 20px 10px rgba(255, 173, 222, 0.6)';
-  
-  // Add hover effect
-  submitButton.addEventListener('mouseover', () => {
-    submitButton.style.backgroundColor = '#ffadde';
-    submitButton.style.transform = 'scale(1.05)';
-  });
-  submitButton.addEventListener('mouseout', () => {
-    submitButton.style.backgroundColor = '#ff7bd7';
-    submitButton.style.transform = 'scale(1)';
-  });
-  
-  // Add the game_over action when clicked
-  submitButton.addEventListener('click', () => {
-    // Add haptic feedback
-    if (window.FarcadeSDK) {
-      window.FarcadeSDK.singlePlayer.actions.hapticFeedback();
-    }
-    
-    // Submit the score
-    if (window.FarcadeSDK) {
-      window.FarcadeSDK.singlePlayer.actions.gameOver({ score: score });
-    }
-  });
-  
-  overlay.appendChild(submitButton);
-  
-  // Add animations CSS if not already present
-  if (!document.getElementById('win-animation-styles')) {
-    const style = document.createElement('style');
-    style.id = 'win-animation-styles';
-    style.textContent = `
+        // Remove the notification after animation completes
+        setTimeout(() => {
+          notification.remove();
+          movesBox.classList.remove("bonus-highlight");
+        }, 1500);
+      }
+
+      function showWinNotification() {
+        // Set game as inactive to prevent further moves
+        gameActive = false;
+
+        // Create the overlay container
+        const overlay = document.createElement("div");
+        overlay.className = "win-overlay";
+        overlay.style.position = "fixed";
+        overlay.style.top = "0";
+        overlay.style.left = "0";
+        overlay.style.width = "100%";
+        overlay.style.height = "100%";
+        overlay.style.backgroundColor = "rgba(0, 0, 0, 0.85)";
+        overlay.style.zIndex = "1000";
+        overlay.style.display = "flex";
+        overlay.style.flexDirection = "column";
+        overlay.style.justifyContent = "center";
+        overlay.style.alignItems = "center";
+        overlay.style.animation = "fadeIn 0.5s ease-in";
+
+        // Add the YOU WIN! text
+        const winText = document.createElement("div");
+        winText.textContent = "YOU WIN!";
+        winText.style.color = "#FFFFFF";
+        winText.style.fontSize = "36px";
+        winText.style.fontWeight = "bold";
+        winText.style.marginBottom = "20px";
+        winText.style.animation = "scaleIn 0.8s ease-out";
+        overlay.appendChild(winText);
+
+        // Create container for the image and glow
+        const imageContainer = document.createElement("div");
+        imageContainer.className = "image-container";
+        imageContainer.style.position = "relative";
+        imageContainer.style.marginBottom = "30px";
+        imageContainer.style.width = "150px";
+        imageContainer.style.height = "150px";
+        imageContainer.style.display = "flex";
+        imageContainer.style.justifyContent = "center";
+        imageContainer.style.alignItems = "center";
+
+        // Create circular glow background element
+        const glowCircle = document.createElement("div");
+        glowCircle.className = "glow-circle";
+        glowCircle.style.position = "absolute";
+        glowCircle.style.width = "130px";
+        glowCircle.style.height = "130px";
+        glowCircle.style.borderRadius = "50%";
+        glowCircle.style.background = "#FFE780";
+        glowCircle.style.filter = "blur(15px)";
+        glowCircle.style.opacity = "0.7";
+        glowCircle.style.animation = "spin 12s linear infinite";
+        imageContainer.appendChild(glowCircle);
+
+        // Add the 8192 image on top
+        const image = document.createElement("img");
+        image.src = getPreloadedImageSrc(8192);
+        image.alt = "8192";
+        image.style.width = "120px";
+        image.style.height = "120px";
+        image.style.position = "relative";
+        image.style.animation = "pulse 2s infinite";
+        imageContainer.appendChild(image);
+
+        overlay.appendChild(imageContainer);
+
+        // Add the SUBMIT SCORE button
+        const submitButton = document.createElement("button");
+        submitButton.textContent = "SUBMIT SCORE";
+        submitButton.style.backgroundColor = "#ff7bd7";
+        submitButton.style.border = "none";
+        submitButton.style.borderRadius = "50px";
+        submitButton.style.padding = "15px 30px";
+        submitButton.style.fontSize = "18px";
+        submitButton.style.fontWeight = "bold";
+        submitButton.style.color = "#FFFFFF";
+        submitButton.style.cursor = "pointer";
+        submitButton.style.marginTop = "20px";
+        submitButton.style.animation = "scaleIn 0.8s ease-out 0.3s both";
+        submitButton.style.boxShadow = "0 0 20px 10px rgba(255, 173, 222, 0.6)";
+
+        // Add hover effect
+        submitButton.addEventListener("mouseover", () => {
+          submitButton.style.backgroundColor = "#ffadde";
+          submitButton.style.transform = "scale(1.05)";
+        });
+        submitButton.addEventListener("mouseout", () => {
+          submitButton.style.backgroundColor = "#ff7bd7";
+          submitButton.style.transform = "scale(1)";
+        });
+
+        // Add the game_over action when clicked
+        submitButton.addEventListener("click", () => {
+          // Add haptic feedback
+          if (window.FarcadeSDK) {
+            window.FarcadeSDK.singlePlayer.actions.hapticFeedback();
+          }
+
+          // Submit the score
+          if (window.FarcadeSDK) {
+            window.FarcadeSDK.singlePlayer.actions.gameOver({ score: score });
+          }
+        });
+
+        overlay.appendChild(submitButton);
+
+        // Add animations CSS if not already present
+        if (!document.getElementById("win-animation-styles")) {
+          const style = document.createElement("style");
+          style.id = "win-animation-styles";
+          style.textContent = `
       @keyframes fadeIn {
         from { opacity: 0; }
         to { opacity: 1; }
@@ -1374,76 +1560,158 @@ function showWinNotification() {
         100% { transform: scale(1); filter: brightness(1); }
       }
     `;
-    document.head.appendChild(style);
-  }
-  
-  // Add to document
-  document.body.appendChild(overlay);
-  
-  // Play the special fanfare win sound
-  if (SoundManager.isInitialized) {
-    SoundManager.playWinSound();
-  }
-  
-  // Add haptic feedback
-  if (window.FarcadeSDK) {
-    window.FarcadeSDK.singlePlayer.actions.hapticFeedback();
-  }
-}
+          document.head.appendChild(style);
+        }
 
-function updateMilestonePreview() {
-  // Define the milestone progression
-  const milestones = [128, 256, 512, 1024, 2048, 4096];
-  
-  // Find the next milestone based on current highest value
-  let nextMilestone = milestones[0];
-  for (const milestone of milestones) {
-    if (highestValue < milestone) {
-      nextMilestone = milestone;
-      break;
-    }
-  }
-  
-  // If we've reached all milestones, use the last one
-  if (highestValue >= milestones[milestones.length - 1]) {
-    nextMilestone = milestones[milestones.length - 1];
-  }
-  
-  // Clear and update the preview display
-  previewDisplay.innerHTML = '';
-  previewDisplay.style.visibility = "visible";
-  
-  // Add the text
-  const textSpan = document.createElement('span');
-  textSpan.textContent = "MAKE ";
-  previewDisplay.appendChild(textSpan);
-  
-  // Add the tile image
-  const milestoneImg = document.createElement('img');
-  milestoneImg.src = getPreloadedImageSrc(nextMilestone);
-  milestoneImg.alt = nextMilestone.toString();
-  milestoneImg.className = 'preview-img';
-  previewDisplay.appendChild(milestoneImg);
-  
-  // Add the bonus text
-  const bonusSpan = document.createElement('span');
-  bonusSpan.textContent = " FOR +25 MOVES";
-  previewDisplay.appendChild(bonusSpan);
-}
+        // Add to document
+        document.body.appendChild(overlay);
+
+        // Play the special fanfare win sound
+        if (SoundManager.isInitialized) {
+          SoundManager.playWinSound();
+        }
+
+        // Add haptic feedback
+        if (window.FarcadeSDK) {
+          window.FarcadeSDK.singlePlayer.actions.hapticFeedback();
+        }
+      }
+
+      function updateMilestonePreview() {
+        // Clear previous content
+        previewDisplay.innerHTML = "";
+        previewDisplay.style.visibility = "visible";
+
+        // Determine what to show based on game progression
+        if (!highestValue || highestValue < 4) {
+          // Beginner equation: 2+2=4
+          const firstImg = document.createElement("img");
+          firstImg.src = getPreloadedImageSrc(2);
+          firstImg.alt = "2";
+          firstImg.className = "preview-img";
+
+          const plusSpan = document.createElement("span");
+          plusSpan.textContent = "+";
+
+          const secondImg = document.createElement("img");
+          secondImg.src = getPreloadedImageSrc(2);
+          secondImg.alt = "2";
+          secondImg.className = "preview-img";
+
+          const equalsSpan = document.createElement("span");
+          equalsSpan.textContent = "=";
+
+          const resultImg = document.createElement("img");
+          resultImg.src = getPreloadedImageSrc(4);
+          resultImg.alt = "4";
+          resultImg.className = "preview-img";
+
+          previewDisplay.appendChild(firstImg);
+          previewDisplay.appendChild(plusSpan);
+          previewDisplay.appendChild(secondImg);
+          previewDisplay.appendChild(equalsSpan);
+          previewDisplay.appendChild(resultImg);
+        } else if (highestValue < 8) {
+          // Intermediate equation: 4+4=8
+          const firstImg = document.createElement("img");
+          firstImg.src = getPreloadedImageSrc(4);
+          firstImg.alt = "4";
+          firstImg.className = "preview-img";
+
+          const plusSpan = document.createElement("span");
+          plusSpan.textContent = "+";
+
+          const secondImg = document.createElement("img");
+          secondImg.src = getPreloadedImageSrc(4);
+          secondImg.alt = "4";
+          secondImg.className = "preview-img";
+
+          const equalsSpan = document.createElement("span");
+          equalsSpan.textContent = "=";
+
+          const resultImg = document.createElement("img");
+          resultImg.src = getPreloadedImageSrc(8);
+          resultImg.alt = "8";
+          resultImg.className = "preview-img";
+
+          previewDisplay.appendChild(firstImg);
+          previewDisplay.appendChild(plusSpan);
+          previewDisplay.appendChild(secondImg);
+          previewDisplay.appendChild(equalsSpan);
+          previewDisplay.appendChild(resultImg);
+        } else {
+          // Advanced display: highest tile + highest tile = silhouette of next tier
+          const currentHighestValue = highestValue;
+          const nextTierValue = currentHighestValue * 2;
+
+          // Define milestones that get special bonus message
+          const milestones = [128, 256, 512, 1024, 2048, 4096];
+          const isMilestone = milestones.includes(nextTierValue);
+
+          // First tile image
+          const firstImg = document.createElement("img");
+          firstImg.src = getPreloadedImageSrc(currentHighestValue);
+          firstImg.alt = currentHighestValue.toString();
+          firstImg.className = "preview-img";
+
+          const plusSpan = document.createElement("span");
+          plusSpan.textContent = "+";
+
+          // Second tile image
+          const secondImg = document.createElement("img");
+          secondImg.src = getPreloadedImageSrc(currentHighestValue);
+          secondImg.alt = currentHighestValue.toString();
+          secondImg.className = "preview-img";
+
+          const equalsSpan = document.createElement("span");
+          equalsSpan.textContent = "=";
+
+          // Result tile as silhouette
+          const silhouetteContainer = document.createElement("div");
+          silhouetteContainer.style.position = "relative";
+          silhouetteContainer.style.display = "inline-block";
+
+          const silhouetteImg = document.createElement("img");
+          silhouetteImg.src = getPreloadedImageSrc(nextTierValue);
+          silhouetteImg.alt = nextTierValue.toString();
+          silhouetteImg.className = "preview-img";
+          silhouetteImg.style.opacity = "0.5";
+          silhouetteImg.style.filter = "brightness(0.7) contrast(0.8)";
+
+          silhouetteContainer.appendChild(silhouetteImg);
+
+          // Append all elements
+          previewDisplay.appendChild(firstImg);
+          previewDisplay.appendChild(plusSpan);
+          previewDisplay.appendChild(secondImg);
+          previewDisplay.appendChild(equalsSpan);
+          previewDisplay.appendChild(silhouetteContainer);
+
+          // Add bonus text for milestone tiles
+          if (isMilestone) {
+            const bonusText = document.createElement("span");
+            bonusText.textContent = "(BONUS +25 MOVES)";
+            bonusText.style.marginLeft = "4px";
+            bonusText.style.fontSize = "10px";
+            bonusText.style.color = "#FFE780"; // Gold color for emphasis
+            previewDisplay.appendChild(bonusText);
+          }
+        }
+      }
 
       function applyChainRules(cV, bV, iCL, iIM, newValue) {
-  // Only allow identical values in a chain
-  if (newValue === bV) {
-    return {
-      valid: true,
-      cumulativeValue: bV * 2, // Result will be double the base value
-      baseValue: bV,
-      identicalChainLength: iCL + 1,
-      initialIdenticalMet: true
-    };
-  }
-  return { valid: false };
-}
+        // Only allow identical values in a chain
+        if (newValue === bV) {
+          return {
+            valid: true,
+            cumulativeValue: bV * 2, // Result will be double the base value
+            baseValue: bV,
+            identicalChainLength: iCL + 1,
+            initialIdenticalMet: true,
+          };
+        }
+        return { valid: false };
+      }
 
       function resetDrag() {
         // Logic remains robust
@@ -1459,59 +1727,83 @@ function updateMilestonePreview() {
       }
 
       function resetPreview() {
-  previewCumulativeValueState = null;
-  previewBaseValue = null;
-  previewIdenticalChainLengthState = 1;
-  previewInitialIdenticalMet = false;
-  
-  // Instead of hiding, show milestone preview
-  updateMilestonePreview();
-}
+        previewCumulativeValueState = null;
+        previewBaseValue = null;
+        previewIdenticalChainLengthState = 1;
+        previewInitialIdenticalMet = false;
+
+        // Use our new implementation that shows equations
+        updateMilestonePreview();
+      }
 
       // Modify updatePreview function to use the milestone preview when not dragging
-function updatePreview() {
-  if (previewBaseValue !== null && dragChain.length >= 1) {
-    // During active dragging, show the chain preview as before
-    const resultValue = previewBaseValue * 2;
-    
-    // Clear previous content
-    previewDisplay.innerHTML = '';
-    previewDisplay.style.visibility = "visible";
-    
-    if (dragChain.length < 2) {
-      // Need one more matching tile
-      const textSpan = document.createElement('span');
-      textSpan.textContent = "Need 1 more matching ";
-      previewDisplay.appendChild(textSpan);
-      
-      const baseImg = document.createElement('img');
-      baseImg.src = getPreloadedImageSrc(previewBaseValue);
-      baseImg.alt = previewBaseValue.toString();
-      baseImg.className = 'preview-img';
-      previewDisplay.appendChild(baseImg);
-    } else {
-      // Show merge result (without the count)
-      const baseImg = document.createElement('img');
-      baseImg.src = getPreloadedImageSrc(previewBaseValue);
-      baseImg.alt = previewBaseValue.toString();
-      baseImg.className = 'preview-img';
-      previewDisplay.appendChild(baseImg);
-      
-      const arrowSpan = document.createElement('span');
-      arrowSpan.textContent = " → ";
-      previewDisplay.appendChild(arrowSpan);
-      
-      const resultImg = document.createElement('img');
-      resultImg.src = getPreloadedImageSrc(resultValue);
-      resultImg.alt = resultValue.toString();
-      resultImg.className = 'preview-img';
-      previewDisplay.appendChild(resultImg);
-    }
-  } else {
-    // When not dragging, show milestone preview
-    updateMilestonePreview();
-  }
-}
+      function updatePreview() {
+        if (previewBaseValue !== null && dragChain.length >= 1) {
+          // During active dragging, show the chain preview as before
+          const resultValue = previewBaseValue * 2;
+
+          // Clear previous content
+          previewDisplay.innerHTML = "";
+          previewDisplay.style.visibility = "visible";
+
+          if (dragChain.length < 2) {
+            // Need one more matching tile
+            const textSpan = document.createElement("span");
+            textSpan.textContent = "Need 1 more matching ";
+            previewDisplay.appendChild(textSpan);
+
+            const baseImg = document.createElement("img");
+            baseImg.src = getPreloadedImageSrc(previewBaseValue);
+            baseImg.alt = previewBaseValue.toString();
+            baseImg.className = "preview-img";
+            previewDisplay.appendChild(baseImg);
+          } else {
+            // Show merge result (without the count)
+            const baseImg = document.createElement("img");
+            baseImg.src = getPreloadedImageSrc(previewBaseValue);
+            baseImg.alt = previewBaseValue.toString();
+            baseImg.className = "preview-img";
+            previewDisplay.appendChild(baseImg);
+
+            const arrowSpan = document.createElement("span");
+            arrowSpan.textContent = " → ";
+            previewDisplay.appendChild(arrowSpan);
+
+            // Determine if we should use a silhouette for the result
+            const shouldUseSilhouette =
+              resultValue >= 16 && // Only use silhouette for tile 16 or higher
+              !achievedValues.has(resultValue); // Only use silhouette if not already discovered
+
+            if (shouldUseSilhouette) {
+              // Create a container for the silhouette result
+              const silhouetteContainer = document.createElement("div");
+              silhouetteContainer.style.position = "relative";
+              silhouetteContainer.style.display = "inline-block";
+
+              // Apply silhouette styling to the result image
+              const resultImg = document.createElement("img");
+              resultImg.src = getPreloadedImageSrc(resultValue);
+              resultImg.alt = resultValue.toString();
+              resultImg.className = "preview-img";
+              resultImg.style.opacity = "1";
+              resultImg.style.filter = "brightness(1) contrast(1)";
+
+              silhouetteContainer.appendChild(resultImg);
+              previewDisplay.appendChild(silhouetteContainer);
+            } else {
+              // Show normal image for already discovered tiles or tiles below 16
+              const resultImg = document.createElement("img");
+              resultImg.src = getPreloadedImageSrc(resultValue);
+              resultImg.alt = resultValue.toString();
+              resultImg.className = "preview-img";
+              previewDisplay.appendChild(resultImg);
+            }
+          }
+        } else {
+          // When not dragging, show milestone preview
+          updateMilestonePreview();
+        }
+      }
 
       function isValidMove(currentCell) {
         // Logic remains robust
@@ -1538,71 +1830,71 @@ function updatePreview() {
       }
 
       function simulateAddTile(cV, bV, iCL, iIM, newValue) {
-  // First tile in chain
-  if (bV === null) return { valid: true, cV: newValue, bV: newValue, iCL: 1, iIM: false };
-  
-  // Strict type comparison with Number conversion
-  if (Number(newValue) === Number(bV)) {
-    return { 
-      valid: true, 
-      cV: bV * 2, 
-      bV: bV,
-      iCL: iCL + 1, 
-      iIM: true 
-    };
-  }
-  
-  return { valid: false };
-}
+        // First tile in chain
+        if (bV === null) return { valid: true, cV: newValue, bV: newValue, iCL: 1, iIM: false };
+
+        // Strict type comparison with Number conversion
+        if (Number(newValue) === Number(bV)) {
+          return {
+            valid: true,
+            cV: bV * 2,
+            bV: bV,
+            iCL: iCL + 1,
+            iIM: true,
+          };
+        }
+
+        return { valid: false };
+      }
 
       function handleStart(e) {
-  if (!gameActive) return;
+        if (!gameActive) return;
 
-  // Initialize audio on first interaction
-  if (!SoundManager.isInitialized) {
-    SoundManager.init();
-    // Unlock iOS audio restrictions by playing a silent sound within the user gesture
-    const silentBuffer = SoundManager.audioContext.createBuffer(1, 1, 22050);
-    const silentSource = SoundManager.audioContext.createBufferSource();
-    silentSource.buffer = silentBuffer;
-    silentSource.connect(SoundManager.audioContext.destination);
-    silentSource.start(0);
-    
-    // Also force resume the audio context (iOS requirement)
-    SoundManager.audioContext.resume();
-  }
-  
-  let target = e.target;
-  if (target.tagName === "IMG") target = target.parentElement;
-  const cell = target.closest(".game-cell");
-  if (!cell) return;
-  const position = getCellPosition(cell);
-  if (!position) return;
-  
-  isDragging = true;
-  startCell = position;
-  const startValue = board[position.row][position.col];
-  previewCumulativeValueState = startValue;
-  previewBaseValue = startValue;
-  previewIdenticalChainLengthState = 1;
-  previewInitialIdenticalMet = false;
-  dragChain = [position];
-  const key = `${position.row},${position.col}`;
-  selectedCells.clear();
-  selectedCells.add(key);
-  const startEl = cellElements.get(key);
-  if (startEl) startEl.classList.add("highlight");
-  
-  // Play sound on first tile selection - critical for iOS audio
-  SoundManager.playBubbleSound(1);
-  
-  // Add haptic feedback on first tile selection
-  if (window.FarcadeSDK) {
-    window.FarcadeSDK.singlePlayer.actions.hapticFeedback();
-  }
-  
-  updatePreview();
-}
+        // Initialize audio on first interaction
+        if (!SoundManager.isInitialized) {
+          SoundManager.init();
+          // Unlock iOS audio restrictions by playing a silent sound within the user gesture
+          const silentBuffer = SoundManager.audioContext.createBuffer(1, 1, 22050);
+          const silentSource = SoundManager.audioContext.createBufferSource();
+          silentSource.buffer = silentBuffer;
+          silentSource.connect(SoundManager.audioContext.destination);
+          silentSource.start(0);
+
+          // Also force resume the audio context (iOS requirement)
+          SoundManager.audioContext.resume();
+        }
+
+        let target = e.target;
+        if (target.tagName === "IMG") target = target.parentElement;
+        const cell = target.closest(".game-cell");
+        if (!cell) return;
+        const position = getCellPosition(cell);
+        if (!position) return;
+
+        isDragging = true;
+        startCell = position;
+        const startValue = board[position.row][position.col];
+        previewCumulativeValueState = startValue;
+        previewBaseValue = startValue;
+        previewIdenticalChainLengthState = 1;
+        previewInitialIdenticalMet = false;
+        dragChain = [position];
+        const key = `${position.row},${position.col}`;
+        selectedCells.clear();
+        selectedCells.add(key);
+        const startEl = cellElements.get(key);
+        if (startEl) startEl.classList.add("highlight");
+
+        // Play sound on first tile selection - critical for iOS audio
+        SoundManager.playBubbleSound(1);
+
+        // Add haptic feedback on first tile selection
+        if (window.FarcadeSDK) {
+          window.FarcadeSDK.singlePlayer.actions.hapticFeedback();
+        }
+
+        updatePreview();
+      }
 
       function recalculatePreviewValues() {
         // Logic remains robust
@@ -1633,216 +1925,217 @@ function updatePreview() {
       }
 
       function handleMove(e) {
-  if (!isDragging || !gameActive || dragChain.length === 0) return;
-  
-  let target = e.target;
-  if (target.tagName === "IMG") target = target.parentElement;
-  
-  // Get the cell or find the nearest cell using coordinates for better diagonal handling
-  let cell = target.closest(".game-cell");
-  if (!cell && e.clientX && e.clientY) {
-    // Find the nearest cell by coordinates for diagonal movements
-    cell = findNearestCellForDiagonal(e.clientX, e.clientY);
-  }
-  
-  if (!cell) return;
-  const currentCell = getCellPosition(cell);
-  if (!currentCell) return;
-  
-  const cellKey = `${currentCell.row},${currentCell.col}`;
-  
-  // Handle going backwards in the chain (unchanged)
-  if (dragChain.length > 1) {
-    const secondLastCell = dragChain[dragChain.length - 2];
-    if (secondLastCell.row === currentCell.row && secondLastCell.col === currentCell.col) {
-      const lastCellPopped = dragChain.pop();
-      const lastCellKey = `${lastCellPopped.row},${lastCellPopped.col}`;
-      selectedCells.delete(lastCellKey);
-      const lastEl = cellElements.get(lastCellKey);
-      if (lastEl) lastEl.classList.remove("highlight");
-      recalculatePreviewValues();
-      updatePreview();
-      return;
-    }
-  }
-  
-  // If already selected, just return
-  if (selectedCells.has(cellKey)) return;
-  
-  // The rest remains unchanged
-  if (isValidMove(currentCell)) {
-    const simResult = simulateAddTile(
-      previewCumulativeValueState,
-      previewBaseValue,
-      previewIdenticalChainLengthState,
-      previewInitialIdenticalMet,
-      board[currentCell.row][currentCell.col],
-    );
-    if (simResult.valid) {
-      // Existing code for valid moves...
-      previewCumulativeValueState = simResult.cV;
-      previewBaseValue = simResult.bV;
-      previewIdenticalChainLengthState = simResult.iCL;
-      previewInitialIdenticalMet = simResult.iIM;
-      dragChain.push(currentCell);
-      selectedCells.add(cellKey);
-      const el = cellElements.get(cellKey);
-      if (el) el.classList.add("highlight");
+        if (!isDragging || !gameActive || dragChain.length === 0) return;
 
-      // Initialize audio on first interaction if needed
-      if (!SoundManager.isInitialized) {
-        SoundManager.init();
-      }
-      // Play bubble sound with pitch based on chain length
-      SoundManager.playBubbleSound(dragChain.length);
-      
-      // Add haptic feedback when adding to chain
-      if (window.FarcadeSDK) {
-        window.FarcadeSDK.singlePlayer.actions.hapticFeedback();
-      }
-      
-      updatePreview();
-    }
-  }
-}
+        let target = e.target;
+        if (target.tagName === "IMG") target = target.parentElement;
 
-// New helper function to find the nearest valid cell for diagonal movement
-function findNearestCellForDiagonal(clientX, clientY) {
-  // Convert client coordinates to board-relative coordinates
-  const boardRect = gameBoard.getBoundingClientRect();
-  const boardX = clientX - boardRect.left;
-  const boardY = clientY - boardRect.top;
-  
-  // If we have a last cell in the chain, prioritize diagonal movement
-  if (dragChain.length > 0) {
-    const lastCell = dragChain[dragChain.length - 1];
-    const lastCellKey = `${lastCell.row},${lastCell.col}`;
-    const lastCellEl = cellElements.get(lastCellKey);
-    
-    if (lastCellEl) {
-      const lastRect = lastCellEl.getBoundingClientRect();
-      
-      // Find all potential diagonal cells from the last selected cell
-      for (let r = Math.max(0, lastCell.row - 1); r <= Math.min(rows - 1, lastCell.row + 1); r++) {
-        for (let c = Math.max(0, lastCell.col - 1); c <= Math.min(cols - 1, lastCell.col + 1); c++) {
-          // Skip if it's the same cell or non-diagonal adjacent cell
-          if ((r === lastCell.row && c === lastCell.col) || 
-              (r === lastCell.row && Math.abs(c - lastCell.col) === 1) || 
-              (c === lastCell.col && Math.abs(r - lastCell.row) === 1)) {
-            continue;
+        // Get the cell or find the nearest cell using coordinates for better diagonal handling
+        let cell = target.closest(".game-cell");
+        if (!cell && e.clientX && e.clientY) {
+          // Find the nearest cell by coordinates for diagonal movements
+          cell = findNearestCellForDiagonal(e.clientX, e.clientY);
+        }
+
+        if (!cell) return;
+        const currentCell = getCellPosition(cell);
+        if (!currentCell) return;
+
+        const cellKey = `${currentCell.row},${currentCell.col}`;
+
+        // Handle going backwards in the chain (unchanged)
+        if (dragChain.length > 1) {
+          const secondLastCell = dragChain[dragChain.length - 2];
+          if (secondLastCell.row === currentCell.row && secondLastCell.col === currentCell.col) {
+            const lastCellPopped = dragChain.pop();
+            const lastCellKey = `${lastCellPopped.row},${lastCellPopped.col}`;
+            selectedCells.delete(lastCellKey);
+            const lastEl = cellElements.get(lastCellKey);
+            if (lastEl) lastEl.classList.remove("highlight");
+            recalculatePreviewValues();
+            updatePreview();
+            return;
           }
-          
-          // Check if this diagonal cell is valid for the next move
-          const diagonalCell = {row: r, col: c};
-          if (isValidMove(diagonalCell)) {
-            const key = `${r},${c}`;
-            const el = cellElements.get(key);
-            if (el) {
-              const rect = el.getBoundingClientRect();
-              
-              // Check if pointer is near the cell (with extended buffer for diagonals)
-              const centerX = rect.left + rect.width / 2 - boardRect.left;
-              const centerY = rect.top + rect.height / 2 - boardRect.top;
-              const distance = Math.sqrt(Math.pow(boardX - centerX, 2) + Math.pow(boardY - centerY, 2));
-              
-              // If within a more generous radius (60% of tile size), consider it a hit
-              if (distance < TILE_SIZE * 0.6) {
-                return el;
+        }
+
+        // If already selected, just return
+        if (selectedCells.has(cellKey)) return;
+
+        // The rest remains unchanged
+        if (isValidMove(currentCell)) {
+          const simResult = simulateAddTile(
+            previewCumulativeValueState,
+            previewBaseValue,
+            previewIdenticalChainLengthState,
+            previewInitialIdenticalMet,
+            board[currentCell.row][currentCell.col],
+          );
+          if (simResult.valid) {
+            // Existing code for valid moves...
+            previewCumulativeValueState = simResult.cV;
+            previewBaseValue = simResult.bV;
+            previewIdenticalChainLengthState = simResult.iCL;
+            previewInitialIdenticalMet = simResult.iIM;
+            dragChain.push(currentCell);
+            selectedCells.add(cellKey);
+            const el = cellElements.get(cellKey);
+            if (el) el.classList.add("highlight");
+
+            // Initialize audio on first interaction if needed
+            if (!SoundManager.isInitialized) {
+              SoundManager.init();
+            }
+            // Play bubble sound with pitch based on chain length
+            SoundManager.playBubbleSound(dragChain.length);
+
+            // Add haptic feedback when adding to chain
+            if (window.FarcadeSDK) {
+              window.FarcadeSDK.singlePlayer.actions.hapticFeedback();
+            }
+
+            updatePreview();
+          }
+        }
+      }
+
+      // New helper function to find the nearest valid cell for diagonal movement
+      function findNearestCellForDiagonal(clientX, clientY) {
+        // Convert client coordinates to board-relative coordinates
+        const boardRect = gameBoard.getBoundingClientRect();
+        const boardX = clientX - boardRect.left;
+        const boardY = clientY - boardRect.top;
+
+        // If we have a last cell in the chain, prioritize diagonal movement
+        if (dragChain.length > 0) {
+          const lastCell = dragChain[dragChain.length - 1];
+          const lastCellKey = `${lastCell.row},${lastCell.col}`;
+          const lastCellEl = cellElements.get(lastCellKey);
+
+          if (lastCellEl) {
+            const lastRect = lastCellEl.getBoundingClientRect();
+
+            // Find all potential diagonal cells from the last selected cell
+            for (let r = Math.max(0, lastCell.row - 1); r <= Math.min(rows - 1, lastCell.row + 1); r++) {
+              for (let c = Math.max(0, lastCell.col - 1); c <= Math.min(cols - 1, lastCell.col + 1); c++) {
+                // Skip if it's the same cell or non-diagonal adjacent cell
+                if (
+                  (r === lastCell.row && c === lastCell.col) ||
+                  (r === lastCell.row && Math.abs(c - lastCell.col) === 1) ||
+                  (c === lastCell.col && Math.abs(r - lastCell.row) === 1)
+                ) {
+                  continue;
+                }
+
+                // Check if this diagonal cell is valid for the next move
+                const diagonalCell = { row: r, col: c };
+                if (isValidMove(diagonalCell)) {
+                  const key = `${r},${c}`;
+                  const el = cellElements.get(key);
+                  if (el) {
+                    const rect = el.getBoundingClientRect();
+
+                    // Check if pointer is near the cell (with extended buffer for diagonals)
+                    const centerX = rect.left + rect.width / 2 - boardRect.left;
+                    const centerY = rect.top + rect.height / 2 - boardRect.top;
+                    const distance = Math.sqrt(Math.pow(boardX - centerX, 2) + Math.pow(boardY - centerY, 2));
+
+                    // If within a more generous radius (60% of tile size), consider it a hit
+                    if (distance < TILE_SIZE * 0.6) {
+                      return el;
+                    }
+                  }
+                }
               }
             }
           }
         }
-      }
-    }
-  }
 
-  // Fallback to standard cell finding logic if no diagonal match
-  let closestCell = null;
-  let closestDistance = Infinity;
-  
-  // Iterate through all cell elements
-  cellElements.forEach((el, key) => {
-    const rect = el.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2 - boardRect.left;
-    const centerY = rect.top + rect.height / 2 - boardRect.top;
-    const distance = Math.sqrt(Math.pow(boardX - centerX, 2) + Math.pow(boardY - centerY, 2));
-    
-    // Use a standard hit radius
-    if (distance < TILE_SIZE * 0.5 && distance < closestDistance) {
-      closestCell = el;
-      closestDistance = distance;
-    }
-  });
-  
-  return closestCell;
-}
+        // Fallback to standard cell finding logic if no diagonal match
+        let closestCell = null;
+        let closestDistance = Infinity;
+
+        // Iterate through all cell elements
+        cellElements.forEach((el, key) => {
+          const rect = el.getBoundingClientRect();
+          const centerX = rect.left + rect.width / 2 - boardRect.left;
+          const centerY = rect.top + rect.height / 2 - boardRect.top;
+          const distance = Math.sqrt(Math.pow(boardX - centerX, 2) + Math.pow(boardY - centerY, 2));
+
+          // Use a standard hit radius
+          if (distance < TILE_SIZE * 0.5 && distance < closestDistance) {
+            closestCell = el;
+            closestDistance = distance;
+          }
+        });
+
+        return closestCell;
+      }
 
       function handleEnd() {
-  if (!gameActive) return;
-  if (isDragging && dragChain.length >= 2) {
-    // Process the chain first, which will queue up animations and bonuses
-    processChain(dragChain);
-    
-    // Decrement moves AFTER processing the chain
-    movesLeft--;
-    
-    // Check moves state after a slight delay to ensure
-    // any bonus moves have been applied
-    setTimeout(() => {
-      if (movesLeft <= 0) {
-        gameActive = false;
-        console.log("GAME OVER - Score: " + score + ", Highest value: " + highestValue);
-        
-        // No "Out of Moves!" message, just delay the Farcade game over call slightly
-        setTimeout(() => {
-          if (window.FarcadeSDK) {
-            window.FarcadeSDK.singlePlayer.actions.gameOver({ score: score });
-          }
-        }, 500); // Brief delay to ensure animations complete
-      } 
-      else if (movesLeft === 5) {
-        // Show warning message at exactly 5 moves left
-        showLowMovesWarning();
-      }
-    }, 350); // Slightly longer than the chain merge animation
-  }
-  resetDrag();
-  resetPreview();
-}
+        if (!gameActive) return;
+        if (isDragging && dragChain.length >= 2) {
+          // Process the chain first, which will queue up animations and bonuses
+          processChain(dragChain);
 
-// Function to show warning message at 5 moves left
-function showLowMovesWarning() {
-  const movesBox = document.querySelector('.moves-box');
-  movesBox.classList.add('low-moves-highlight');
-  
-  const notification = document.createElement('div');
-  notification.className = 'moves-warning-notification';
-  notification.textContent = '5 MOVES LEFT!';
-  
-  notification.style.position = 'absolute';
-  notification.style.top = '50%';
-  notification.style.left = '50%';
-  notification.style.transform = 'translate(-50%, -50%)';
-  notification.style.background = getTileColor(256); // Use 256 color for warning
-  notification.style.color = '#fff'; // White text for better visibility
-  notification.style.padding = '12px 25px';
-  notification.style.borderRadius = '8px';
-  notification.style.fontWeight = 'bold';
-  notification.style.fontSize = '22px';
-  notification.style.zIndex = '100';
-  notification.style.animation = 'fadeInWarning 2s forwards';
-  notification.style.textAlign = 'center';
-  notification.style.minWidth = '180px'; 
-  notification.style.display = 'flex';
-  notification.style.alignItems = 'center';
-  notification.style.justifyContent = 'center';
-  gameBoard.appendChild(notification);
-  
-  // Add CSS animation if not already present
-  if (!document.getElementById('warning-animation-styles')) {
-    const style = document.createElement('style');
-    style.id = 'warning-animation-styles';
-    style.textContent = `
+          // Decrement moves AFTER processing the chain
+          movesLeft--;
+
+          // Check moves state after a slight delay to ensure
+          // any bonus moves have been applied
+          setTimeout(() => {
+            if (movesLeft <= 0) {
+              gameActive = false;
+              console.log("GAME OVER - Score: " + score + ", Highest value: " + highestValue);
+
+              // No "Out of Moves!" message, just delay the Farcade game over call slightly
+              setTimeout(() => {
+                if (window.FarcadeSDK) {
+                  window.FarcadeSDK.singlePlayer.actions.gameOver({ score: score });
+                }
+              }, 500); // Brief delay to ensure animations complete
+            } else if (movesLeft === 5) {
+              // Show warning message at exactly 5 moves left
+              showLowMovesWarning();
+            }
+          }, 350); // Slightly longer than the chain merge animation
+        }
+        resetDrag();
+        resetPreview();
+      }
+
+      // Function to show warning message at 5 moves left
+      function showLowMovesWarning() {
+        const movesBox = document.querySelector(".moves-box");
+        movesBox.classList.add("low-moves-highlight");
+
+        const notification = document.createElement("div");
+        notification.className = "moves-warning-notification";
+        notification.textContent = "5 MOVES LEFT!";
+
+        notification.style.position = "absolute";
+        notification.style.top = "50%";
+        notification.style.left = "50%";
+        notification.style.transform = "translate(-50%, -50%)";
+        notification.style.background = getTileColor(256); // Use 256 color for warning
+        notification.style.color = "#fff"; // White text for better visibility
+        notification.style.padding = "12px 25px";
+        notification.style.borderRadius = "8px";
+        notification.style.fontWeight = "bold";
+        notification.style.fontSize = "22px";
+        notification.style.zIndex = "100";
+        notification.style.animation = "fadeInWarning 2s forwards";
+        notification.style.textAlign = "center";
+        notification.style.minWidth = "180px";
+        notification.style.display = "flex";
+        notification.style.alignItems = "center";
+        notification.style.justifyContent = "center";
+        gameBoard.appendChild(notification);
+
+        // Add CSS animation if not already present
+        if (!document.getElementById("warning-animation-styles")) {
+          const style = document.createElement("style");
+          style.id = "warning-animation-styles";
+          style.textContent = `
       @keyframes fadeInWarning {
         0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
         20% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
@@ -1850,20 +2143,20 @@ function showLowMovesWarning() {
         100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
       }
     `;
-    document.head.appendChild(style);
-  }
-  
-  // Add haptic feedback for the warning
-  if (window.FarcadeSDK) {
-    window.FarcadeSDK.singlePlayer.actions.hapticFeedback();
-  }
-  
-  // Remove the notification and the highlight after animation completes
-  setTimeout(() => {
-    notification.remove();
-    movesBox.classList.remove('low-moves-highlight');
-  }, 2000);
-}
+          document.head.appendChild(style);
+        }
+
+        // Add haptic feedback for the warning
+        if (window.FarcadeSDK) {
+          window.FarcadeSDK.singlePlayer.actions.hapticFeedback();
+        }
+
+        // Remove the notification and the highlight after animation completes
+        setTimeout(() => {
+          notification.remove();
+          movesBox.classList.remove("low-moves-highlight");
+        }, 2000);
+      }
 
       function getCellPosition(element) {
         // Logic remains robust
@@ -1889,21 +2182,21 @@ function showLowMovesWarning() {
         { passive: false },
       );
       gameBoard.addEventListener(
-  "touchmove",
-  (e) => {
-    if (e.touches.length > 0) {
-      const touch = e.touches[0];
-      const elementAtPoint = document.elementFromPoint(touch.clientX, touch.clientY);
-      handleMove({ 
-        target: elementAtPoint,
-        clientX: touch.clientX,
-        clientY: touch.clientY
-      }); // Enhanced synthetic event with coordinates
-      e.preventDefault();
-    }
-  },
-  { passive: false },
-);
+        "touchmove",
+        (e) => {
+          if (e.touches.length > 0) {
+            const touch = e.touches[0];
+            const elementAtPoint = document.elementFromPoint(touch.clientX, touch.clientY);
+            handleMove({
+              target: elementAtPoint,
+              clientX: touch.clientX,
+              clientY: touch.clientY,
+            }); // Enhanced synthetic event with coordinates
+            e.preventDefault();
+          }
+        },
+        { passive: false },
+      );
       window.addEventListener("touchend", (e) => {
         if (isDragging) {
           handleEnd();
@@ -1917,71 +2210,154 @@ function showLowMovesWarning() {
       });
 
       function restartGame() {
-
         // Remove the win notification overlay if it exists
-  const winOverlay = document.querySelector('.win-overlay');
-  if (winOverlay) {
-    winOverlay.remove();
-  }
+        const winOverlay = document.querySelector(".win-overlay");
+        if (winOverlay) {
+          winOverlay.remove();
+        }
 
-  // Logic remains robust
-  movesLeft = 25;
-  gameActive = true;
-  highestValue = 0;
-  score = 0;
-  achievedValues.clear(); // Reset the achievements
-  initGameLogic(); // Call the renamed init function
-  
-  // Explicitly update the milestone preview after game restart
-  updateMilestonePreview();
-}
+        // Logic remains robust
+        movesLeft = 25;
+        gameActive = true;
+        highestValue = 0;
+        score = 0;
+        achievedValues.clear(); // Reset the achievements
+        initGameLogic(); // Call the renamed init function
+
+        // Explicitly update the milestone preview after game restart
+        updateMilestonePreview();
+      }
 
       // Start the game with splash screen
-document.addEventListener("DOMContentLoaded", function() {
-  document.body.classList.add('splash-active');
-  
-  const splashScreen = document.getElementById("splash-screen");
-  
-  // Make the whole splash clickable
-  splashScreen.addEventListener("click", startGame);
-  
-  // Preload images in the background
-  preloadAllImages().then(() => {
-    console.log("All images preloaded successfully.");
-  }).catch(error => {
-    console.error("Failed to preload images:", error);
-  });
-  
-  function startGame(e) {
-    // Add haptic feedback
-    if (window.FarcadeSDK) {
-      window.FarcadeSDK.singlePlayer.actions.hapticFeedback();
-    }
-    
-    // Fade out the splash screen
-    splashScreen.style.opacity = "0";
-    
-    // Remove it after the transition
-    setTimeout(() => {
-      splashScreen.style.display = "none";
-      document.body.classList.remove('splash-active');
-      
-      // Initialize the game
-      initGameLogic();
-      updateMilestonePreview();
-      
-      // Initialize sound on first interaction
-      if (!SoundManager.isInitialized) {
-        SoundManager.init();
-      }
-      
-      // Signal to Farcade that the game is ready
-      if (window.FarcadeSDK) {
-        window.FarcadeSDK.singlePlayer.actions.ready();
-      }
-    }, 500);
-  }
-});
+      document.addEventListener("DOMContentLoaded", function () {
+        document.body.classList.add("splash-active");
+
+        const splashScreen = document.getElementById("splash-screen");
+
+        // Make the whole splash clickable
+        splashScreen.addEventListener("click", startGame);
+
+        // Create the music toggle button
+        const musicToggleButton = document.createElement("div");
+        musicToggleButton.id = "music-toggle-button";
+        musicToggleButton.className = "music-toggle";
+        musicToggleButton.setAttribute("aria-label", "Music On");
+
+        musicToggleButton.innerHTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+      <path class="music-icon" d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+      <g class="music-off-icon">
+        <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+        <path d="M2 2L22 22" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"/>
+      </g>
+    </svg>
+  `;
+
+        // Add click handler for music toggle
+        musicToggleButton.addEventListener("click", function () {
+          // Add haptic feedback
+          if (window.FarcadeSDK) {
+            window.FarcadeSDK.singlePlayer.actions.hapticFeedback();
+          }
+
+          // Toggle music state if SoundManager is initialized
+          if (SoundManager.isInitialized) {
+            SoundManager.toggleMusic();
+          } else {
+            // Initialize sound if not already done
+            SoundManager.init();
+            // Toggle immediately after init
+            SoundManager.toggleMusic();
+          }
+        });
+
+        // Add to body
+        document.body.appendChild(musicToggleButton);
+
+        // Preload both images and sound in the background
+        Promise.all([preloadAllImages(), preloadBackgroundMusic()])
+          .then(() => {
+            console.log("All assets preloaded successfully.");
+          })
+          .catch((error) => {
+            console.error("Failed to preload some assets:", error);
+          });
+
+        function preloadBackgroundMusic() {
+          return new Promise((resolve) => {
+            // Initialize audio context without playing anything
+            if (!SoundManager.isInitialized) {
+              try {
+                SoundManager.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                SoundManager.gainNode = SoundManager.audioContext.createGain();
+                SoundManager.gainNode.connect(SoundManager.audioContext.destination);
+
+                // Create separate gain node for music
+                SoundManager.musicGainNode = SoundManager.audioContext.createGain();
+                SoundManager.musicGainNode.connect(SoundManager.audioContext.destination);
+
+                // Just load the music, don't start playing yet
+                SoundManager.loadSound(
+                  "https://lqy3lriiybxcejon.public.blob.vercel-storage.com/f781d46e-5da6-4e58-95ac-e984443cfbff/Good%20Mornin-UbgtRp0eCSEMgUKgSy6RVO2ANAE9A0.mp3",
+                )
+                  .then((buffer) => {
+                    SoundManager.backgroundMusic = buffer;
+                    SoundManager._musicPreloaded = true;
+                    resolve();
+                  })
+                  .catch((e) => {
+                    console.warn("Failed to preload background music", e);
+                    resolve(); // Still resolve to not block the Promise.all
+                  });
+
+                // Mark as partially initialized - music is loaded but not other sounds
+                SoundManager._musicPreloaded = false;
+              } catch (e) {
+                console.error("Web Audio API not supported:", e);
+                resolve(); // Still resolve to not block the Promise.all
+              }
+            } else {
+              resolve();
+            }
+          });
+        }
+
+        function startGame(e) {
+          // Add haptic feedback
+          if (window.FarcadeSDK) {
+            window.FarcadeSDK.singlePlayer.actions.hapticFeedback();
+          }
+
+          // Fade out the splash screen
+          splashScreen.style.opacity = "0";
+
+          // Initialize the full sound manager - will use already loaded music
+          if (!SoundManager.isInitialized) {
+            SoundManager.init();
+          }
+
+          // Remove splash screen after the transition
+          setTimeout(() => {
+            splashScreen.style.display = "none";
+            document.body.classList.remove("splash-active");
+
+            // Initialize the game
+            initGameLogic();
+            updateMilestonePreview();
+
+            // If music is preloaded, we can start playing immediately
+            if (!SoundManager.isMuted && !SoundManager.isMusicMuted) {
+              // This will use the preloaded music buffer
+              SoundManager.playBackgroundMusic();
+            }
+
+            // Signal to Farcade that the game is ready
+            if (window.FarcadeSDK) {
+              window.FarcadeSDK.singlePlayer.actions.ready();
+            }
+          }, 500);
+        }
+      });
     </script>
   </body>
 </html>
