@@ -4,6 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Dooplicates | a Doodles game by wlt</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
     <style>
       html,
       body {
@@ -1145,30 +1148,231 @@
         return droppedCells;
       }
 
-      // Make sure refillBoard uses the updated probability distribution
-      function refillBoard() {
-        const newlyAddedCells = [];
-        for (let c = 0; c < cols; c++) {
-          for (let r = 0; r < rows; r++) {
-            if (board[r][c] === null) {
-              // For refills, use mostly 2s and 4s (90% chance)
-              let newValue;
-              const rand = Math.random();
-              if (rand < 0.6) {
-                newValue = 2;
-              } else if (rand < 0.9) {
-                newValue = 4;
-              } else {
-                newValue = 8; // Only 10% chance for 8s
-              }
-
-              board[r][c] = newValue;
-              newlyAddedCells.push({ row: r, col: c, value: newValue });
-            }
-          }
-        }
-        return newlyAddedCells;
+      function anyPossibleMoves() {
+  // Check all directions (horizontal, vertical, and diagonal)
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const currentValue = board[r][c];
+      
+      // Check right
+      if (c + 1 < cols && board[r][c + 1] === currentValue) {
+        return true;
       }
+      
+      // Check below
+      if (r + 1 < rows && board[r + 1][c] === currentValue) {
+        return true;
+      }
+      
+      // Check diagonal - bottom right
+      if (r + 1 < rows && c + 1 < cols && board[r + 1][c + 1] === currentValue) {
+        return true;
+      }
+      
+      // Check diagonal - bottom left
+      if (r + 1 < rows && c - 1 >= 0 && board[r + 1][c - 1] === currentValue) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+// Add this function to fix an unwinnable board
+function fixUnwinnableBoard() {
+  console.log("Fixing unwinnable board...");
+  
+  // Select a common value (2 or 4) to create a match
+  const selectedValue = Math.random() < 0.7 ? 2 : 4;
+  
+  // Find a good place to create a match - try to avoid corners
+  const r = Math.floor(Math.random() * (rows - 1)) + 1;  // Avoid top edge
+  const c = Math.floor(Math.random() * (cols - 1));      // Avoid right edge
+  
+  // Update the board data
+  board[r][c] = selectedValue;
+  board[r][c+1] = selectedValue;
+  
+  // Force update the visual tiles to ensure they match the data
+  const key1 = `${r},${c}`;
+  const key2 = `${r},${c+1}`;
+  
+  // Remove existing DOM elements if they exist
+  if (cellElements.has(key1)) {
+    cellElements.get(key1).remove();
+    cellElements.delete(key1);
+  }
+  
+  if (cellElements.has(key2)) {
+    cellElements.get(key2).remove();
+    cellElements.delete(key2);
+  }
+  
+  // Create new cells with proper values
+  createStaticCell(r, c, selectedValue);
+  createStaticCell(r, c+1, selectedValue);
+  
+  console.log(`Created match at (${r},${c}) and (${r},${c+1}) with value ${selectedValue}`);
+  
+  return [
+    {row: r, col: c, value: selectedValue},
+    {row: r, col: c+1, value: selectedValue}
+  ];
+}
+
+// Update the refillBoard function to check for and fix unwinnable boards
+function refillBoard() {
+  const newlyAddedCells = [];
+  for (let c = 0; c < cols; c++) {
+    for (let r = 0; r < rows; r++) {
+      if (board[r][c] === null) {
+        // For refills, use mostly 2s and 4s (90% chance)
+        let newValue;
+        const rand = Math.random();
+        if (rand < 0.6) {
+          newValue = 2;
+        } else if (rand < 0.9) {
+          newValue = 4;
+        } else {
+          newValue = 8; // Only 10% chance for 8s
+        }
+
+        board[r][c] = newValue;
+        newlyAddedCells.push({ row: r, col: c, value: newValue });
+      }
+    }
+  }
+  
+  // Check if there are any possible moves after refill
+  if (!anyPossibleMoves()) {
+    // Schedule the no matches game over to happen after the board renders
+    setTimeout(() => {
+      showNoMatchesGameOver();
+    }, 500);
+  }
+  
+  return newlyAddedCells;
+}
+
+// Add a new function to display No Matches game over message
+function showNoMatchesGameOver() {
+  // Set game as inactive to prevent further moves
+  gameActive = false;
+  
+  const notification = document.createElement("div");
+  notification.className = "game-over-notification";
+  notification.textContent = "NO POSSIBLE MATCHES!";
+  
+  notification.style.position = "absolute";
+  notification.style.top = "50%";
+  notification.style.left = "50%";
+  notification.style.transform = "translate(-50%, -50%)";
+  notification.style.background = "#FF7BD7"; // Use the 256 color for consistency with warnings
+  notification.style.color = "#fff";
+  notification.style.padding = "15px 30px";
+  notification.style.borderRadius = "8px";
+  notification.style.fontWeight = "bold";
+  notification.style.fontSize = "24px";
+  notification.style.zIndex = "100";
+  notification.style.animation = "fadeInGameOver 1s forwards";
+  notification.style.textAlign = "center";
+  notification.style.minWidth = "280px";
+  notification.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.4)";
+  gameBoard.appendChild(notification);
+  
+  // Add CSS animation if not already present
+  if (!document.getElementById("game-over-animation-styles")) {
+    const style = document.createElement("style");
+    style.id = "game-over-animation-styles";
+    style.textContent = `
+      @keyframes fadeInGameOver {
+        0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+        100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+  
+  // Add haptic feedback for the game over
+  if (window.FarcadeSDK) {
+    window.FarcadeSDK.singlePlayer.actions.hapticFeedback();
+  }
+  
+  // Submit the score after a short delay
+  setTimeout(() => {
+    if (window.FarcadeSDK) {
+      window.FarcadeSDK.singlePlayer.actions.gameOver({ score: score });
+    }
+  }, 2000);
+}
+
+function createUnwinnableBoardForTesting() {
+  console.log("Creating an unwinnable board for testing...");
+  
+  // Create a pattern where no two adjacent cells have the same value
+  let values = [2, 4, 8, 16];
+  
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      // Pick a value that doesn't match neighbors
+      let validValues = [...values];
+      
+      // Check left neighbor
+      if (c > 0) {
+        validValues = validValues.filter(v => v !== board[r][c-1]);
+      }
+      
+      // Check above neighbor
+      if (r > 0) {
+        validValues = validValues.filter(v => v !== board[r-1][c]);
+      }
+      
+      // Check diagonal - top left
+      if (r > 0 && c > 0) {
+        validValues = validValues.filter(v => v !== board[r-1][c-1]);
+      }
+      
+      // Check diagonal - top right
+      if (r > 0 && c < cols - 1) {
+        validValues = validValues.filter(v => v !== board[r-1][c+1]);
+      }
+      
+      // If we filtered out all values, use 2 and adjust neighbors later
+      if (validValues.length === 0) {
+        validValues = [2];
+      }
+      
+      // Assign a valid value
+      board[r][c] = validValues[0];
+    }
+  }
+  
+  // Clear the game board display and recreate all cells
+  gameBoard.innerHTML = "";
+  cellElements.clear();
+  
+  // Render the unwinnable board
+  const currentBoardCells = [];
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      currentBoardCells.push({ row: r, col: c, value: board[r][c] });
+    }
+  }
+  
+  renderBoard(true, [], currentBoardCells);
+  
+  // Verify the board is actually unwinnable
+  const hasPossibleMoves = anyPossibleMoves();
+  console.log("Board has possible moves:", hasPossibleMoves);
+  
+  // Explicitly trigger the game over if there are no possible moves
+  if (!hasPossibleMoves) {
+    console.log("Triggering No Matches game over");
+    setTimeout(() => {
+      showNoMatchesGameOver();
+    }, 500);
+  }
+}
 
       function processChain(chain) {
         if (chain.length < 2) return;
@@ -2203,6 +2407,7 @@
       });
       document.addEventListener("keydown", (e) => {
         if (e.key === "r" || e.key === "R") restartGame();
+          if (e.key === "u" || e.key === "U") createUnwinnableBoardForTesting();
       });
 
       function restartGame() {
